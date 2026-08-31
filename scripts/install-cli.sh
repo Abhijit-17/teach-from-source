@@ -21,6 +21,10 @@ if [ -L "$DEST" ]; then
 elif [ -d "$DEST" ]; then
   # Never delete a real directory; it may hold local edits. Move it aside.
   BAK="$DEST.bak-$(date +%Y%m%d-%H%M%S)"
+  # date resolves to the second, so two installs in the same second would
+  # otherwise collide and mv would nest the second one inside the first backup.
+  n=2
+  while [ -e "$BAK" ]; do BAK="$DEST.bak-$(date +%Y%m%d-%H%M%S).$n"; n=$((n + 1)); done
   mv "$DEST" "$BAK"
   echo "note: existing install backed up to $BAK"
 elif [ -e "$DEST" ]; then

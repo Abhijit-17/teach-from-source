@@ -13,7 +13,7 @@
 ## Success looks like
 - {A specific, observable thing the user will be able to do}
 - {Another specific thing}
-- {…}
+- {...}
 
 ## Constraints
 - {Time, budget, prior commitments, learning preferences, anything that bounds the approach}

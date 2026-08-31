@@ -1,4 +1,4 @@
-/* Quiz behavior — pairs with .quiz styles in lesson.css.
+/* Quiz behavior: pairs with .quiz styles in lesson.css.
    Copied into ./assets/quiz.js on workspace init; every lesson with a quiz
    loads it via <script src="../assets/quiz.js" defer></script>.
 
@@ -37,5 +37,5 @@ document.addEventListener('click', function (e) {
       at: new Date().toISOString()
     });
     localStorage.setItem('quiz-log', JSON.stringify(log));
-  } catch (_) { /* file:// or storage disabled — quiz still works */ }
+  } catch (_) { /* file:// or storage disabled, quiz still works */ }
 });

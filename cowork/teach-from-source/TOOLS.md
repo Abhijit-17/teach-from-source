@@ -14,10 +14,10 @@ Check availability before using anything: `command -v pdftotext`. Never assume, 
 | `pdfimages` | Pull embedded figures out at native resolution for lessons. |
 | `mutool` | `mutool draw -F txt`, and `mutool show file.pdf outline` for a **real TOC** when one is embedded. Try this before hand-mapping. |
 | `qpdf` | Split, merge, repair, decrypt. `qpdf --pages file.pdf 40-72 -- out.pdf` to carve a chapter. |
-| `pandoc` | The universal converter. HTML/EPUB/DOCX/LaTeX/RST → Markdown. `pandoc -t markdown --wrap=none`. |
+| `pandoc` | The universal converter. HTML/EPUB/DOCX/LaTeX/RST -> Markdown. `pandoc -t markdown --wrap=none`. |
 | `tesseract` | OCR for scanned PDFs, with `tesseract-lang` for non-English. Pair with `pdftoppm -r 300`. |
 | `trafilatura` | **The default web path.** Extracts article text from a URL, stripping nav/ads/boilerplate. `trafilatura -u URL --markdown`. Also does sitemap crawls. |
-| `ebook-convert` | **Kindle and legacy ebook formats.** `.azw3`/`.mobi`/`.lit`/`.fb2`/`.pdb` → EPUB, which you then unpack normally. Also the fastest whole-book text dump: `ebook-convert in.azw3 out.txt`. |
+| `ebook-convert` | **Kindle and legacy ebook formats.** `.azw3`/`.mobi`/`.lit`/`.fb2`/`.pdb` -> EPUB, which you then unpack normally. Also the fastest whole-book text dump: `ebook-convert in.azw3 out.txt`. |
 | `ebook-meta` | Title, author, language, ISBN from any ebook. Fills the `SOURCES.md` entry without guessing. |
 | `markitdown` | Fallback converter for DOCX/PPTX/XLSX and odd formats. |
 | `yt-dlp` | Video/audio sources. `--write-auto-sub --skip-download` gets a **transcript with timestamps**, which are locators for free. |
@@ -60,12 +60,12 @@ mutool show book.pdf outline 2>/dev/null || pdftotext -f 1 -l 20 -layout book.pd
 pdftotext -f 118 -l 133 -layout book.pdf - > sources/<id>/sections/ch04-p118-133.md
 ```
 
-**Scanned page → text**
+**Scanned page -> text**
 ```
 pdftoppm -r 300 -f 118 -l 118 -png book.pdf /tmp/pg && tesseract /tmp/pg-118.png - 2>/dev/null
 ```
 
-**Kindle format → workable EPUB (then map it normally)**
+**Kindle format -> workable EPUB (then map it normally)**
 ```
 ebook-meta book.azw3                             # title/author for SOURCES.md
 ebook-convert book.azw3 sources/<id>/raw/book.epub
@@ -73,7 +73,7 @@ unzip -q sources/<id>/raw/book.epub -d sources/<id>/raw/unpacked/
 ```
 DRM-free files only. If conversion errors out on DRM, say so and ask the user for an unencumbered copy. Do not attempt to strip it.
 
-**EPUB → per-chapter Markdown**
+**EPUB -> per-chapter Markdown**
 ```
 unzip -q book.epub -d sources/<id>/raw/
 pandoc sources/<id>/raw/OEBPS/ch04.xhtml -t markdown --wrap=none

@@ -67,7 +67,7 @@ On demand, section-granular, cached forever.
 - **Flag ambiguity** in the section file rather than resolving it silently. Ambiguity in a source is worth teaching.
 
 ### Scanned sources
-`pdfinfo` plus a one-page `pdftotext` test tells you if there is a text layer. Empty output means a scan: go `pdftoppm -r 300` → `tesseract`, mark the source as OCR-derived in `SOURCES.md`, and treat quotes from it with suspicion, because OCR mangles numbers, symbols, and code most of all. Verify any quoted formula against the rendered page with `Read` before putting it in a lesson.
+`pdfinfo` plus a one-page `pdftotext` test tells you if there is a text layer. Empty output means a scan: go `pdftoppm -r 300` -> `tesseract`, mark the source as OCR-derived in `SOURCES.md`, and treat quotes from it with suspicion, because OCR mangles numbers, symbols, and code most of all. Verify any quoted formula against the rendered page with `Read` before putting it in a lesson.
 
 ## Directory layout
 
@@ -88,13 +88,13 @@ sources/
 
 Source: `~/books/atomic-habits.pdf` (PDF, 320pp, text layer present)
 Acquired: local file, verified 2026-08-02
-Page offset: printed page = PDF page − 14
+Page offset: printed page = PDF page - 14
 
 | # | Title | Locator | Depends on | Coverage |
 |---|-------|---------|-----------|----------|
-| 1 | The Surprising Power of Tiny Habits | p. 15–27 (PDF 29–41) | none | taught |
-| 2 | How Habits Shape Identity | p. 28–38 (PDF 42–52) | 1 | ingested |
-| 3 | Build Better Habits in 4 Steps | p. 39–52 (PDF 53–66) | 1 | unread |
+| 1 | The Surprising Power of Tiny Habits | p. 15-27 (PDF 29-41) | none | taught |
+| 2 | How Habits Shape Identity | p. 28-38 (PDF 42-52) | 1 | ingested |
+| 3 | Build Better Habits in 4 Steps | p. 39-52 (PDF 53-66) | 1 | unread |
 
 ## Notes
 - Ch. 7 assumes the 4-step loop notation from Ch. 3.

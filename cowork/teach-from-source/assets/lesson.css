@@ -1,15 +1,15 @@
 @charset "UTF-8";
 
-/* Lesson stylesheet — dark theme.
+/* Lesson stylesheet: dark theme.
    Copied into ./assets/lesson.css on workspace init. Every lesson and
    reference document links it. Extend it; do not fork it per lesson.
 
    Reminder for whoever links this: every lesson HTML must open with
    <meta charset="utf-8"> as its first line. Without it, file:// opens
-   render em dashes as â€” and middots as Â·. See SKILL.md → Presentation. */
+   render em dashes as â€” and middots as Â·. See SKILL.md -> Presentation. */
 
 :root {
-  /* Surfaces — warm-neutral dark, not pure black. Pure black on OLED
+  /* Surfaces: warm-neutral dark, not pure black. Pure black on OLED
      smears text during scroll and raises halation for astigmatic readers. */
   --bg:            #14161a;
   --bg-raised:     #1b1e24;
@@ -17,13 +17,13 @@
   --border:        #2a2f38;
   --border-strong: #3a414d;
 
-  /* Text — capped near #e8e8ea, never #fff. Full-white on dark
+  /* Text: capped near #e8e8ea, never #fff. Full-white on dark
      over-contrasts and induces halation. */
   --text:          #e2e4e9;
   --text-muted:    #a4abb8;
   --text-faint:    #767d8b;
 
-  /* Accents — desaturated for dark backgrounds. Saturated hues
+  /* Accents: desaturated for dark backgrounds. Saturated hues
      vibrate against dark surfaces. */
   --accent:        #7fb0e8;   /* links, headings */
   --accent-quiet:  #4a6d94;

@@ -43,7 +43,7 @@ Do not teach from a source you have not mapped. On a new source:
 1. **Acquire and identify.** Get a stable local snapshot: confirm the file, fetch the page, clone the repo, pull the transcript. Assign a short stable ID (`atomic-habits`, `sicp`, `attention-paper`).
 2. **Map the structure.** Extract the table of contents / section headings into `./sources/<id>/OUTLINE.md`, with locators for each unit. Follow [INGESTION.md](./INGESTION.md) for per-medium mechanics.
 3. **Register it** in `SOURCES.md` with provenance and coverage all-unread.
-4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host (`~/.claude/skills/…` in Claude Code, an unpacked bundle elsewhere). Resolve it:
+4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host (`~/.claude/skills/...` in Claude Code, an unpacked bundle elsewhere). Resolve it:
    ```
    mkdir -p assets
    SKILL_DIR=$(dirname "$(find ~/.claude/skills /mnt/skills /opt/skills . \
@@ -102,7 +102,7 @@ Every `.html` file this skill writes **must** begin with exactly this, before an
 ```html
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>…</title>
+<title>...</title>
 ```
 
 **Why this is a hard rule and not a nicety.** These files are opened from disk over `file://`, not served by a web server. There is no `Content-Type` header to carry the encoding, so a browser that finds no `<meta charset>` falls back to a legacy single-byte encoding and renders every multi-byte UTF-8 character as mojibake: `—` becomes `â€”`, `·` becomes `Â·`, `…` becomes `â€¦`, `“` becomes `â€œ`. The file itself is *correct* UTF-8 (`file -I` will cheerfully confirm `charset=utf-8`), so the defect is invisible to you and glaring to the user, usually in the very first line of the lesson header.
@@ -166,7 +166,7 @@ A lesson is not done when the file is written. Before the session moves on:
 
 ## Coverage and What to Teach Next
 
-Coverage advances `unread` → `ingested` → `taught` → `practiced`. **The outline's per-section table is the authority**; `SOURCES.md` carries only the rollup ("3/20 chapters taught"). Update both in the same turn a lesson completes, because a stale coverage line makes the next-lesson decision wrong. This gives you something `teach` cannot have: an explicit map of the remaining territory.
+Coverage advances `unread` -> `ingested` -> `taught` -> `practiced`. **The outline's per-section table is the authority**; `SOURCES.md` carries only the rollup ("3/20 chapters taught"). Update both in the same turn a lesson completes, because a stale coverage line makes the next-lesson decision wrong. This gives you something `teach` cannot have: an explicit map of the remaining territory.
 
 Pick the next lesson from mission relevance and prerequisite readiness, not page order. A book's structure serves the author's exposition; your sequence serves the user's mission. Where the source has hard dependencies (chapter 7 assumes chapter 3's notation), respect them, and record them in the outline as you map.
 
