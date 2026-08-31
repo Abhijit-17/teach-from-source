@@ -90,6 +90,8 @@ Beyond the general lesson rules, a source-grounded lesson carries:
 - **The author's own vocabulary.** Use the terms the source uses, even when you would phrase it differently. Note the divergence in the glossary if the field's standard term differs. Do not quietly substitute it.
 - **A "go read it yourself" pointer**: the exact pages worth reading in full, once the lesson has made them tractable.
 - **A reminder to ask followup questions.** You are their teacher; the source is the syllabus.
+- **A note that answers given in the browser do not reach you**, wherever the lesson carries a quiz or an exercise, saying what to bring back to the chat. Without it the user answers into `localStorage` and the course stalls at `taught`.
+- **A stated position in the source's order**, whenever this lesson is not the next unit in the source: what is being deferred and when it returns.
 
 If possible, open the lesson for the user with a CLI command.
 
@@ -143,6 +145,13 @@ Interleave across chapters once two or more are covered. Re-test earlier section
 
 **Quiz results reach you through conversation, not through the browser.** `quiz.js` logs to the user's `localStorage`, which you cannot read. Ask how the quiz went, or re-ask one of its questions directly in chat. The user's answer in conversation is the evidence that moves coverage forward.
 
+This is the single easiest way for a course to quietly stall. The user clicks four answers, sees four green borders, and reasonably concludes you saw them too, while coverage sits at `taught` and `learning-records/` stays empty for three lessons. Close that gap in both directions:
+
+- **Say it in the lesson, where they are.** Every lesson carrying a quiz states plainly, next to the quiz, that clicking answers here does not reach you and that they should say how it went in chat. A one-line note in the document beats a rule the user never reads.
+- **Say it when you hand the lesson over**, in the same message, naming the one thing you need back.
+- **Never let "I did it" stand in for evidence.** "I answered the questions" or "I did the exercise" is a report of activity, not a demonstration. Ask for the substance (which option they picked, what their answer was, what the exercise produced) and say why you are asking. Coverage stays at `taught` until it arrives.
+- **Raise it when the gap gets old.** If two or more lessons have gone by with nothing `practiced`, say so directly and make grading the next thing you do, ahead of new material. Three lessons and zero evidence means you are teaching blind, and you should tell the user that rather than keep going.
+
 ## Closing a Lesson
 
 A lesson is not done when the file is written. Before the session moves on:
@@ -162,6 +171,8 @@ A lesson is not done when the file is written. Before the session moves on:
 Coverage advances `unread` → `ingested` → `taught` → `practiced`. **The outline's per-section table is the authority**; `SOURCES.md` carries only the rollup ("3/20 chapters taught"). Update both in the same turn a lesson completes, because a stale coverage line makes the next-lesson decision wrong. This gives you something `teach` cannot have: an explicit map of the remaining territory.
 
 Pick the next lesson from mission relevance and prerequisite readiness, not page order. A book's structure serves the author's exposition; your sequence serves the user's mission. Where the source has hard dependencies (chapter 7 assumes chapter 3's notation), respect them, and record them in the outline as you map.
+
+**Say it out loud when you leave source order.** The user's mental model is the book's table of contents, so "the next chapter" means the source's next chapter unless they have agreed otherwise. Whenever the lesson you are about to teach is not the next unit in the source, tell them *before* you teach it: what you are deferring, why, and when it comes back. Writing the reason into `NOTES.md` or the outline is necessary and not sufficient: those files exist for the next session, not for the user, and they will not go looking. A reordering they did not notice reads as a chapter silently skipped.
 
 When coverage of a mission-relevant part is complete, say so, and produce the reference document that compresses it.
 
