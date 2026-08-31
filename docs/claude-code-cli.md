@@ -202,7 +202,19 @@ xdg-open lessons/0001-*.html      # Linux
 
 Then, and this is the part people skip, **come back and talk about it.**
 
-`quiz.js` writes results to your browser's `localStorage`, which Claude cannot read. Quiz results reach the skill through *conversation*. Being asked "how did the quiz go?" isn't the model failing to notice; it's the only channel that exists. Answer it, or re-answer a question directly in chat, and coverage moves from `taught` to `practiced`. Otherwise it doesn't, by design. Exposure isn't learning.
+> ### The browser is a dead end
+>
+> `quiz.js` writes your answers to `localStorage`. **Claude cannot read `localStorage`.**
+> Clicking options in the browser sends nothing to the session, however green the
+> borders go.
+>
+> Report the substance in the chat: `Lesson 1 quiz: Q1 b, Q2 c, Q3 b. Hesitated on Q3.`
+> "I did the quiz" is a report of activity, not understanding, and the skill is
+> instructed not to accept it as evidence.
+
+Being asked "how did the quiz go?" isn't the model failing to notice; it's the only channel that exists. Answer it, or re-answer a question directly in chat, and coverage moves from `taught` to `practiced`. Otherwise it doesn't, by design. Exposure isn't learning.
+
+The same holds for anything done away from the chat: exercises on paper, a technique tried in a real meeting, a chapter read ahead. Reporting a *wrong* answer is worth more than a right one, because a corrected misconception is the highest-value thing the skill can record about you. See [the README section on this](../README.md#the-one-thing-that-will-silently-stall-your-course).
 
 Useful things to say mid-course:
 

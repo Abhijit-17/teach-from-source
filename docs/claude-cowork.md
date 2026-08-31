@@ -193,7 +193,21 @@ lesson, [example-prompts.md](./example-prompts.md) has a structured brief to ada
 
 Lessons are self-contained HTML in `lessons/`. Open them from the connected folder in your browser.
 
-Then come back and talk about them. `quiz.js` logs to your browser's `localStorage`, which Claude cannot read, so **quiz results reach the skill through conversation, not the browser.** Being asked "how did the quiz go?" is the mechanism, not an oversight. Answer, and coverage moves from `taught` to `practiced`. Stay quiet, and it doesn't. Exposure isn't learning.
+Then come back and talk about them.
+
+> ### The browser is a dead end
+>
+> `quiz.js` logs your answers to `localStorage`. **Claude cannot read `localStorage`**,
+> and connecting the folder does not change that - the file is on your machine, the
+> browser storage is not in the folder at all.
+>
+> Report the substance in the chat: `Lesson 1 quiz: Q1 b, Q2 c, Q3 b. Hesitated on Q3.`
+> "I did the quiz" is a report of activity, not understanding, and the skill is
+> instructed not to accept it as evidence.
+
+Being asked "how did the quiz go?" is the mechanism, not an oversight. Answer, and coverage moves from `taught` to `practiced`. Stay quiet, and it doesn't. Exposure isn't learning.
+
+The same holds for anything done away from the chat: exercises on paper, a technique tried in a real meeting, a chapter read ahead. Reporting a *wrong* answer is worth more than a right one, because a corrected misconception is the highest-value thing the skill can record about you. See [the README section on this](../README.md#the-one-thing-that-will-silently-stall-your-course).
 
 Because of the global instruction, the skill will pause for confirmation before advancing a chapter. Use those pauses:
 

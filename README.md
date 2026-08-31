@@ -165,6 +165,44 @@ Upload it via **Settings -> Skills -> Add -> Upload skill**, paste the global in
 
 ---
 
+## The one thing that will silently stall your course
+
+**Answering a quiz in the browser is a dead end. Claude never sees it.**
+
+This applies identically in the Claude Code CLI and in Cowork, and it is the single
+most common way a course quietly stops working.
+
+`quiz.js` writes your answers to the browser's `localStorage`. Claude cannot read
+`localStorage`, in either host. So you click four options, four borders turn green,
+you reasonably conclude it landed, and meanwhile coverage is still sitting at
+`taught`, `learning-records/` is still empty, and the next lesson is being chosen
+from no evidence at all. It is perfectly possible to work through three lessons and
+have the skill know nothing about how you did.
+
+**Report your progress in the chat, with the substance.** Not "I did the quiz" or
+"I finished the exercise" - those describe activity, not understanding, and the
+skill is instructed not to accept them:
+
+```
+Lesson 2 quiz: Q1 I picked b, Q2 c, Q3 a. Hesitated on Q3.
+The exercise gave me two cases where I'd called it luck and one where I hadn't.
+```
+
+That is what moves a section from `taught` to `practiced`, what produces a learning
+record, and what the next lesson is chosen against. Reporting a *wrong* answer is
+worth more than reporting a right one, because a corrected misconception is the
+highest-value thing the skill can record about you.
+
+The same applies to anything else you did away from the chat: exercises worked on
+paper, a technique tried in a real meeting, a chapter you read ahead. If it did not
+happen in the conversation, it did not happen.
+
+> Lessons from v1.0.1 onward carry this warning next to the quiz itself, and the
+> skill will raise it if two lessons pass with nothing practiced. Neither is a
+> substitute for telling it how you did.
+
+---
+
 ## What you actually get
 
 A learning workspace: one directory per course, yours, plain files, no lock-in.
