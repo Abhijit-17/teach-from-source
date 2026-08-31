@@ -1,0 +1,232 @@
+@charset "UTF-8";
+
+/* Lesson stylesheet — dark theme.
+   Copied into ./assets/lesson.css on workspace init. Every lesson and
+   reference document links it. Extend it; do not fork it per lesson.
+
+   Reminder for whoever links this: every lesson HTML must open with
+   <meta charset="utf-8"> as its first line. Without it, file:// opens
+   render em dashes as â€” and middots as Â·. See SKILL.md → Presentation. */
+
+:root {
+  /* Surfaces — warm-neutral dark, not pure black. Pure black on OLED
+     smears text during scroll and raises halation for astigmatic readers. */
+  --bg:            #14161a;
+  --bg-raised:     #1b1e24;
+  --bg-sunken:     #101216;
+  --border:        #2a2f38;
+  --border-strong: #3a414d;
+
+  /* Text — capped near #e8e8ea, never #fff. Full-white on dark
+     over-contrasts and induces halation. */
+  --text:          #e2e4e9;
+  --text-muted:    #a4abb8;
+  --text-faint:    #767d8b;
+
+  /* Accents — desaturated for dark backgrounds. Saturated hues
+     vibrate against dark surfaces. */
+  --accent:        #7fb0e8;   /* links, headings */
+  --accent-quiet:  #4a6d94;
+  --ok:            #7fc9a0;
+  --warn:          #e0b46a;
+  --err:           #e88f8f;
+  --quote:         #b79ae0;
+
+  --radius: 6px;
+  --measure: 34rem;
+}
+
+html { background: var(--bg); }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 400 17px/1.65 ui-serif, Charter, "Iowan Old Style", Georgia, serif;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 4rem 1.25rem 8rem;
+  -webkit-font-smoothing: antialiased;   /* dark text on light bg renders heavy without this */
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Structure ---- */
+
+h1, h2, h3 {
+  font-family: ui-sans-serif, "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.011em;
+  color: #f0f1f4;
+}
+h1 { font-size: 1.85rem; margin: 0 0 .4rem; }
+h2 { font-size: 1.25rem; margin: 3rem 0 .75rem; color: var(--accent); }
+h3 { font-size: 1.02rem; margin: 2rem 0 .5rem; }
+
+p { margin: 0 0 1.15rem; }
+a { color: var(--accent); text-decoration-color: var(--accent-quiet); text-underline-offset: 2px; }
+a:hover { text-decoration-color: var(--accent); }
+
+hr { border: 0; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+/* ---- Lesson header ---- */
+
+.lesson-meta {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 2.5rem;
+}
+
+/* ---- Citations: the load-bearing element of this skill ---- */
+
+.cite {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .74em;
+  color: var(--text-faint);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: .1em .38em;
+  margin-left: .3em;
+  white-space: nowrap;
+  text-decoration: none;
+}
+a.cite:hover { color: var(--accent); border-color: var(--accent-quiet); }
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: .2rem 0 .2rem 1.15rem;
+  border-left: 2px solid var(--quote);
+  color: var(--text-muted);
+  font-style: italic;
+}
+blockquote cite { display: block; margin-top: .5rem; font-size: .8rem; font-style: normal; color: var(--text-faint); }
+
+/* ---- Callouts ---- */
+
+.note, .warn-box, .gap {
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  background: var(--bg-raised);
+  border-radius: var(--radius);
+  padding: .9rem 1.1rem;
+  margin: 1.5rem 0;
+  font-size: .94rem;
+}
+.note     { border-left-color: var(--accent); }
+.warn-box { border-left-color: var(--warn); }
+.gap      { border-left-color: var(--err); }
+.note > :last-child, .warn-box > :last-child, .gap > :last-child { margin-bottom: 0; }
+
+/* ---- Code ---- */
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .87em;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: .1em .35em;
+}
+pre {
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;          /* wide content scrolls itself; page never scrolls sideways */
+  line-height: 1.55;
+}
+pre code { background: none; border: 0; padding: 0; font-size: .84rem; }
+
+/* ---- Tables ---- */
+
+.table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem;
+        font-family: ui-sans-serif, system-ui, sans-serif; }
+th, td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--border); }
+th { color: var(--text-muted); font-weight: 600; font-size: .78rem;
+     text-transform: uppercase; letter-spacing: .05em; }
+
+/* ---- Quiz: retrieval practice ---- */
+
+.quiz {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 2rem 0;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+.quiz .q { font-weight: 600; margin-bottom: .9rem; font-size: .97rem; }
+.quiz button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg-sunken);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: .6rem .85rem;
+  margin-bottom: .5rem;
+  font: inherit;
+  font-size: .92rem;
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.quiz button:hover:not([disabled]) { border-color: var(--accent-quiet); background: #23272f; }
+.quiz button.correct { border-color: var(--ok);  background: #1a2a22; }
+.quiz button.wrong   { border-color: var(--err); background: #2a1c1c; }
+.quiz button[disabled] { cursor: default; opacity: .82; }
+.quiz button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.quiz .explain {
+  display: none;
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--border);
+  font-size: .89rem;
+  color: var(--text-muted);
+}
+.quiz.answered .explain { display: block; }
+
+/* ---- Figures ---- */
+
+figure { margin: 2rem 0; }
+img, svg, canvas { max-width: 100%; height: auto; border-radius: var(--radius); }
+/* Source scans and diagrams are usually black-on-white; knock back the
+   glare rather than inverting, which wrecks colour figures. */
+img.scan { filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(1.05); }
+figcaption { font-size: .82rem; color: var(--text-faint); margin-top: .6rem;
+             font-family: ui-sans-serif, system-ui, sans-serif; }
+
+/* ---- Footer nav ---- */
+
+.lesson-nav {
+  margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+  font-family: ui-sans-serif, system-ui, sans-serif; font-size: .88rem;
+  display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between;
+}
+
+/* ---- Print: reference docs must print on white ---- */
+
+@media print {
+  :root {
+    --bg: #fff; --bg-raised: #fff; --bg-sunken: #f6f6f6;
+    --text: #111; --text-muted: #444; --text-faint: #666;
+    --border: #ccc; --border-strong: #999; --accent: #14507d; --quote: #5b3fa0;
+  }
+  body { max-width: none; padding: 0; font-size: 11pt; }
+  .quiz button { break-inside: avoid; }
+  img.scan { filter: none; }
+  .lesson-nav { display: none; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .75em; color: #666; }
+}
+
+@media (max-width: 480px) {
+  body { padding: 2rem 1rem 4rem; font-size: 16px; }
+  h1 { font-size: 1.5rem; }
+}
