@@ -10,3 +10,8 @@ Lessons follow ASD-STE100 in full, but the skill also promises to teach in the s
 
 - **Nouns only**: author nouns stay, author verbs are rewritten with Approved words. Closer to the letter of STE, but rejected because lessons would stop matching the source's language exactly where learners must map lesson to page.
 - **STE wins**: replace author terms with Approved words and give the original term only in brackets once. Rejected: it breaks the skill's author-vocabulary rule and makes "go read it yourself" pointers harder to follow.
+
+## Consequences
+
+- An entry counts only when it has a `_Source_:` locator line. `course_check.py` reports entries without one and does not treat their terms as Technical nouns or verbs.
+- A term gets its `GLOSSARY.md` entry no later than the lesson that first uses it, at the latest in the concept's Name step. The earlier rule "add a term only when the user understands it" is dropped: a New concept could otherwise never be named in the lesson that teaches it. Evidence that the user has learned a term lives in coverage (`practiced`) and learning records.

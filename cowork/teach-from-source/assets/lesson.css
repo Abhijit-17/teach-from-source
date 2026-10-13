@@ -120,6 +120,47 @@ blockquote cite { display: block; margin-top: .5rem; font-size: .8rem; font-styl
 .gap      { border-left-color: var(--err); }
 .note > :last-child, .warn-box > :last-child, .gap > :last-child { margin-bottom: 0; }
 
+/* ---- First-principles sequence: SKILL.md -> Teaching Method ----
+   One section.fp per New concept, five child blocks in fixed order.
+   Each step is a quiet rail; Name and Foundation test carry an accent,
+   because the term arrives last and the test is where it is earned. */
+
+.fp {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .3rem 1.1rem .9rem;
+  margin: 2rem 0;
+}
+.fp > div {
+  border-left: 2px solid var(--border-strong);
+  padding-left: 1rem;
+  margin: 1.1rem 0;
+}
+.fp > div > h3 {
+  font-size: .76rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 .4rem;
+}
+.fp > div > :last-child { margin-bottom: 0; }
+.fp .fp-name { border-left-color: var(--accent); }
+.fp .fp-test { border-left-color: var(--warn); }
+.fp .gap { margin: 1rem 0 0; }
+
+/* Known concept: a one-line recall linking to the lesson that built it. */
+.recall {
+  font-size: .92rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--accent-quiet);
+  padding-left: .8rem;
+}
+
+/* Markers for course_check.py, with no visual change:
+     .math    formulas (Exempt text)
+     .name    titles and personal names (Exempt text)
+     .steps   procedural text: 20 words per sentence, not 25 */
+
 /* ---- Code ---- */
 
 code {

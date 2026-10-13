@@ -32,8 +32,13 @@
 - Use for: the neuroscience layer the books gesture at but don't explain.
 
 ## Supplementary
-- [Article: "Habit Formation Timelines", Lally et al.](https://example.com)
-  Added because the primary source cites the "66 days" figure without the study. Use for: the actual variance in the data.
+
+### `lally-2010`: "How are habits formed", Lally et al. (2010)
+- Origin: `https://example.com/lally-2010.pdf` (fetched 2026-08-03 via `curl`)
+- Snapshot: `sources/lally-2010/raw/lally-2010.pdf`
+- Gap: the primary source cites the "66 days" figure without the study.
+- Recommended: 2026-08-03, as the original study behind the figure. Approved by the user: 2026-08-03.
+- Use for: the actual variance in the data.
 
 ## Gaps
 - Neither source covers relapse recovery in any depth, and the mission needs it. Find a supplementary source.
@@ -52,6 +57,7 @@
 - **Annotate with "use for."** One line on what this source is actually good for. In three months a bare title tells you nothing.
 - **Keep coverage current.** Update it in the same turn you finish a lesson, not "later." A stale coverage line makes the next-lesson decision wrong.
 - **Separate primary from supplementary.** Primary is what the user brought and wants to learn. Supplementary is what you added to patch a gap, and it must always say which gap.
+- **Record the recommendation and the approval.** A Supplementary entry says when you recommended it and when the user approved it. Never register one the user did not approve. If the user downloaded it because you could not fetch it, say so in place of the fetch tool (`downloaded by the user, 2026-08-03`).
 - **Surface gaps loudly.** A `## Gaps` section that stays empty across a whole book means you are not checking the mission against the source. Every source has gaps.
 - **Log conflicts, don't arbitrate silently.** When sources disagree, record both positions and link the learning record where it was resolved.
 - **Prune dead sources.** If material turned out to be off-mission or wrong, remove it and note why in `NOTES.md`. Better two sharp sources than nine skimmed ones.

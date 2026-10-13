@@ -26,14 +26,15 @@ Treat the current directory as the workspace:
 - `./reference/*.html`: compressed, printable cheat-sheets and glossaries distilled from the source.
 - `GLOSSARY.md`: the workspace's canonical vocabulary, built from the source's own definitions. Format: [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
 - `./learning-records/*.md`: what the user has actually learned. `NNNN-<dash-case-name>.md`. Format: [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
-- `./assets/*`: reusable components shared across lessons. `lesson.css` (mandatory; see [Presentation](#presentation)) and `quiz.js` are copied here from the skill on init. Diagram helpers and simulators join them as the workspace grows.
+- `./assets/*`: reusable components shared across lessons. `lesson.css` (mandatory; see [Presentation](#presentation)), `quiz.js`, and `course_check.py` (see [Closing a Lesson](#closing-a-lesson)) are copied here from the skill on init. Diagram helpers and simulators join them as the workspace grows.
+- `./ste100/`: optional. The user's own STE dictionary and its permission note. See [ASD-STE100 Writing](#asd-ste100-writing).
 - `NOTES.md`: user preferences and working notes.
 
 ## The Prime Directive
 
 **Every substantive claim in a lesson must trace to a locator in the user's source.** Not to your memory of the book. Not to a plausible paraphrase. To `[Ch. 4 §2, p. 118]`, hyperlinked to the extracted text you actually read.
 
-If the source does not cover something the mission needs, say so out loud and mark it in `SOURCES.md` under `## Gaps`. Then either find a supplementary source (and add it to the manifest) or teach it explicitly flagged as outside-the-source. Never silently paper over a gap with parametric knowledge. That is the failure mode this whole skill exists to prevent.
+If the source does not cover something the mission needs, say so out loud and mark it in `SOURCES.md` under `## Gaps`. Then either recommend a Supplementary source and add it once the user approves, or teach it visibly marked Outside-the-source. Both are described in [When the sources run out](#when-the-sources-run-out). Never silently paper over a gap with parametric knowledge. That is the failure mode this whole skill exists to prevent.
 
 ## First Session: Ingest Before You Teach
 
@@ -51,6 +52,8 @@ Do not teach from a source you have not mapped. On a new source:
    cp "$SKILL_DIR"/assets/* ./assets/
    ```
    If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation) and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
+
+   `course_check.py` is the one asset the skill may replace later. Its second line carries a version (`python3 assets/course_check.py --version`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it. Never do this for `lesson.css` (see [Theme](#theme)).
 5. **Establish the mission.** Ask why they want this material, and what "done" looks like: the whole book, one part, one capability. Write `MISSION.md`. Do not skip this because a title looks self-explanatory; "learn SICP" and "pass my compilers exam" produce completely different lesson sequences.
 6. **Only then** teach lesson `0001`.
 
@@ -64,6 +67,11 @@ On re-entry to an existing workspace, read in this order, and nothing else up fr
 2. `SOURCES.md`. What exists, what's covered, what's in Gaps.
 3. The **latest two or three** learning records, to see where the user actually is.
 4. `NOTES.md`. How they like to be taught.
+
+Then two quick checks, every session:
+
+- **The STE dictionary.** Look for it as described in [ASD-STE100 Writing](#asd-ste100-writing). If the course is in Rules-only mode and the dictionary and its permission note are now present, say so and offer to re-check the Rules-only lessons listed in `NOTES.md`.
+- **The cutover.** A workspace started before this skill taught first principles and wrote in STE has lessons but no cutover line in `NOTES.md`. Old lessons stay as they are. The new rules apply from the next lesson number: record it (`STE + first-principles from lesson 0013`). Offer **once** to run `course_check.py` on the old lessons and rewrite the ones the user picks. Never put an STE badge on an old lesson.
 
 That is enough to pick the next lesson. Do **not** re-read old lessons, do not re-open source files, and do not re-extract sections that already sit in `sources/<id>/sections/`. The workspace files exist precisely so a fresh session starts warm. Begin the session with a one-breath recap ("last time: X; today: Y") and a quick retrieval question from a previous lesson. That is your spacing mechanism.
 
@@ -85,13 +93,104 @@ Beyond the general lesson rules, a source-grounded lesson carries:
 
 - **A source header**: which source and which locators this lesson covers.
 - **Inline locator citations** on every claim, linked to the extracted section files.
-- **The author's own vocabulary.** Use the terms the source uses, even when you would phrase it differently. Note the divergence in the glossary if the field's standard term differs. Do not quietly substitute it.
+- **The author's own vocabulary.** Use the terms the source uses, even when you would phrase it differently. Note the divergence in the glossary if the field's standard term differs. Do not quietly substitute it. These terms are the Technical nouns and Technical verbs that STE allows (see [ASD-STE100 Writing](#asd-ste100-writing)), so each one needs a `GLOSSARY.md` entry with its `_Source_:` locator no later than the lesson that first uses it.
 - **A "go read it yourself" pointer**: the exact pages worth reading in full, once the lesson has made them tractable.
 - **A reminder to ask followup questions.** You are their teacher; the source is the syllabus.
 - **A note that answers given in the browser do not reach you**, wherever the lesson carries a quiz or an exercise, saying what to bring back to the chat. Without it the user answers into `localStorage` and the course stalls at `taught`.
 - **A stated position in the source's order**, whenever this lesson is not the next unit in the source: what is being deferred and when it returns.
 
 If possible, open the lesson for the user with a CLI command.
+
+## Teaching Method: First Principles
+
+Teach every concept from first principles: from the problem it solves and the facts it rests on, up to the term the source uses for it. **Source wins**: the registered sources set how deep a lesson may go. First principles never licenses teaching foundations from memory. When the sources run out, see [below](#when-the-sources-run-out).
+
+### New and Known concepts
+
+Before writing a lesson, list the concepts it needs and sort each one:
+
+- **Known concept**: there is evidence the user knows it, either coverage `practiced` for the section that built it or a learning record. It gets a one-line recall that links to the lesson that built it, and nothing more:
+  ```html
+  <p class="recall">Recall: a replica is a copy of the data on another node. <a href="0003-replication.html">Lesson 0003</a></p>
+  ```
+- **New concept**: everything else, including what the user says they know but has not shown. It gets the full First-principles sequence.
+
+If the New concepts will not all fit in one sitting, split the lesson. Teach the ones the others depend on first, defer the rest to the next lesson, and tell the user what moved and why.
+
+### The First-principles sequence
+
+Each New concept is one `section.fp` with five child blocks, in this order. `course_check.py` fails a section with a step missing or out of order.
+
+1. **Problem** (`.fp-problem`): the situation that needs the concept, before the concept exists.
+2. **Ground truths** (`.fp-truths`): the basic facts or assumptions the concept rests on, each cited to a registered source.
+3. **Build-up** (`.fp-buildup`): the derivation, one step at a time, each step following from the ones before it.
+4. **Name** (`.fp-name`): only now, the source's term for what was just built. Give it a `GLOSSARY.md` entry now if it has none.
+5. **Foundation test** (`.fp-test`): "what if this Ground truth were false?" Show which Ground truth carries the concept. A quiz question works well here.
+
+```html
+<section class="fp" data-concept="replication">
+  <div class="fp-problem"><h3>Problem</h3> ... </div>
+  <div class="fp-truths"><h3>Ground truths</h3> ... </div>
+  <div class="fp-buildup"><h3>Build-up</h3> ... </div>
+  <div class="fp-name"><h3>Name</h3> ... </div>
+  <div class="fp-test"><h3>Foundation test</h3> ... </div>
+</section>
+```
+
+Keep the five `h3` labels exactly as shown.
+
+### When the sources run out
+
+When a Ground truth or a Build-up step needs something no registered source covers:
+
+1. **Log it** as a Gap in `SOURCES.md` under `## Gaps`.
+2. **Recommend** 1-3 freely available original sources that cover it: the original paper, the specification, the official documentation. Not summaries of them. Say which Gap each one covers.
+3. **Wait for approval.** Never add a Supplementary source the user did not approve, because it changes what counts as true for the course.
+4. **Acquire it yourself** once approved: fetch, ingest per [INGESTION.md](./INGESTION.md), and register it under `## Supplementary` with the recommendation and approval recorded ([SOURCE-MANIFEST-FORMAT.md](./SOURCE-MANIFEST-FORMAT.md)). If you cannot fetch it (login, paywall, network, missing tool), ask the user to download it into the workspace and tell you where it is.
+5. **Until a source covers it**, teach it only as Outside-the-source, in a `.gap` box whose first line is exactly:
+   ```html
+   <div class="gap"><p>Outside the source: not from your registered sources. Logged as a Gap.</p> ... </div>
+   ```
+   If the item is a Ground truth, the `.gap` goes inside that `.fp-truths` block.
+
+## ASD-STE100 Writing
+
+Course material is written in **STE**: ASD-STE100 Simplified Technical English, Issue 9. Course material is lessons, reference documents, and the definitions in `GLOSSARY.md`. `SOURCES.md`, `NOTES.md`, outlines, learning records and chat are not Course material. [STE-RULES.md](./STE-RULES.md) is a short summary of the writing rules in this skill's own words. `course_check.py` enforces the numeric limits.
+
+### What STE does not govern: Exempt text
+
+Verbatim source quotes, code, formulas, citation locators, titles and personal names are Exempt text. Tag them so the checker skips them. Each tagged span still counts as one word in its sentence.
+
+| Exempt text | Markup |
+|---|---|
+| Source quotes | `<blockquote>`, `<cite>` |
+| Code | `<code>`, `<pre>` |
+| Formulas | `<span class="math">` |
+| Citation locators | `.cite` |
+| Titles and personal names | `<span class="name">` |
+
+Untagged text is always checked. A missing tag shows up as a finding; it never passes silently. Fix it by tagging, not by rephrasing a name.
+
+### Procedural and descriptive text
+
+Text the user must *do* (exercise steps, setup instructions) is procedural: put it in `<ol class="steps">` (or any element with class `steps`). Its sentences are limited to 20 words. All other text is descriptive, limited to 25 words per sentence and 6 sentences per paragraph.
+
+### Words: Approved words, Technical nouns, Technical verbs
+
+Every word must be either an Approved word, used in its one approved meaning and part of speech, or a term the sources define. Any term with a `GLOSSARY.md` entry and a `_Source_:` locator counts as a Technical noun or Technical verb. This deliberately includes author verbs such as "memoize" that STE's own technical-verb categories would not cover, so lessons keep the author's vocabulary. A source term with no entry may not appear in lesson prose until it gets one.
+
+### The STE dictionary and its permission gate
+
+This skill never ships STE text. The user gets their own copy of the specification from ASD (free, from asd-ste100.org).
+
+1. **Find it.** Look in the workspace's `./ste100/` first, then `~/.claude/ste100/` (Claude Code only).
+2. **Check permission.** The specification's copyright forbids reproduction without ASD's written authority. The word list is a reproduction, so it is extracted only once the folder holds `PERMISSION.md`: the user's own record of ASD's written permission. Without `PERMISSION.md`, do not extract anything, whatever the user says, and tell them why.
+3. **Extract once** with permission: write `approved-words.tsv` into the same folder, one row per approved word form (`word<TAB>part of speech<TAB>approved meaning`; lines starting with `#` are comments). Approved words are the uppercase entries in the Part 2 word list. Never copy dictionary text anywhere else.
+4. **If the dictionary is missing or not permitted**, stop before the first lesson that needs it. Explain where to get the specification, where to put it, and what `PERMISSION.md` is. Then offer **Rules-only mode**: lessons follow the STE writing rules, the dictionary is not checked, and each lesson's header carries the badge
+   ```html
+   <p class="lesson-meta">STE: writing rules only, dictionary not checked</p>
+   ```
+   Use Rules-only mode only once the user agrees. Record it in `NOTES.md` with each Rules-only lesson number. `course_check.py` reports which mode it ran in on its first line of stderr.
 
 ## Presentation
 
@@ -154,14 +253,16 @@ This is the single easiest way for a course to quietly stall. The user clicks fo
 
 A lesson is not done when the file is written. Before the session moves on:
 
-0. **Verify the file renders.** One command, every time, before you tell the user it is ready:
+0. **Run the checker.** One command, every time, before you tell the user the lesson is ready:
    ```
-   head -1 lessons/NNNN-*.html | grep -q 'charset' && echo OK || echo "MISSING CHARSET"
+   python3 assets/course_check.py lessons/NNNN-*.html GLOSSARY.md
    ```
-   A lesson whose first line is not `<meta charset="utf-8">` will show mojibake to the user and nothing to you. Fix it before announcing the lesson, not after they report it.
+   It prints one `file:line: [rule] message` per finding: a missing charset line, STE limits, `section.fp` structure, `.gap` first lines, glossary entries with no `_Source_:`. Fix every finding and run it again until it prints nothing. A lesson whose first line is not `<meta charset="utf-8">` will show mojibake to the user and nothing to you. Fix it before announcing the lesson, not after they report it.
+
+   Then review what a script cannot judge: each word in its approved meaning, one topic per sentence, simple verb tenses in the active voice, noun clusters of three words or fewer, and whether the Build-up really follows step by step. If `python3` is not available, say so and do the checks by hand.
 1. **Mark coverage.** The sections just taught go to `taught` in the outline; update the `SOURCES.md` rollup in the same turn. `practiced` is reserved for evidence: a quiz passed, an exercise worked, a correct answer in conversation. Never for mere exposure.
 2. **Write a learning record if one qualifies** under the criteria in [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md): demonstrated understanding, disclosed prior knowledge, a corrected misconception, or a mission shift. Most lessons will not qualify. Coverage is not learning.
-3. **Promote glossary terms** the user has shown they can use correctly.
+3. **Check the glossary.** Every source term the lesson used has a `GLOSSARY.md` entry with its `_Source_:` locator. In Rules-only mode the checker cannot see a term that has no entry, so look for it yourself.
 4. **Capture preferences** the user expressed ("shorter lessons", "more code, less prose") in `NOTES.md` now, because next session's you won't remember this one.
 
 ## Coverage and What to Teach Next
@@ -182,7 +283,7 @@ Nothing here assumes one source. A workspace may hold a textbook, three papers, 
 
 Lessons are consumed once; reference documents are revisited for years. As sections get taught, distil them into `./reference/`: syntax tables, algorithm cards, formula sheets, decision flowcharts.
 
-A **glossary** is mandatory for any source with its own nomenclature. It lives as `GLOSSARY.md` at the workspace root, in markdown, because you update it constantly and read it every session. Build it from the source's definitions, with locators, from the first lesson onward. Format: [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md). Once it exists, every lesson adheres to it. When it matures, render a printable dark-themed HTML edition into `./reference/`. The root markdown stays canonical.
+A **glossary** is mandatory for any source with its own nomenclature. It lives as `GLOSSARY.md` at the workspace root, in markdown, because you update it constantly and read it every session. Build it from the source's definitions, each with a `_Source_:` locator, from the first lesson onward. Format: [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md). Once it exists, every lesson adheres to it. When it matures, render a printable dark-themed HTML edition into `./reference/`. The root markdown stays canonical.
 
 ## Wisdom
 
