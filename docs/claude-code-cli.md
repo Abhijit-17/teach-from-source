@@ -39,7 +39,7 @@ Verify:
 ```bash
 ls ~/.claude/skills/teach-from-source
 # assets  GLOSSARY-FORMAT.md  INGESTION.md  LEARNING-RECORD-FORMAT.md
-# MISSION-FORMAT.md  SKILL.md  SOURCE-MANIFEST-FORMAT.md  TOOLS.md
+# MISSION-FORMAT.md  SKILL.md  SOURCE-MANIFEST-FORMAT.md  STE-RULES.md  TOOLS.md
 ```
 
 > **Personal vs. project scope.** `~/.claude/skills/` makes the skill available in every session on this machine, which is what you want here, since learning workspaces aren't tied to one repo. Dropping it in a project's `.claude/skills/` instead scopes it to that project only.
@@ -125,6 +125,27 @@ done
 ```
 
 `MISS` lines are fine. They're a menu, not a failure. `MISS ebook-convert` just means "don't hand it a `.azw3` yet."
+
+### Python 3: needed for the lesson checker
+
+Every lesson is checked by `assets/course_check.py` before the skill hands it to you: the charset line, the STE writing limits, and the first-principles structure. It needs `python3` and nothing else (standard library only).
+
+```bash
+python3 --version    # macOS: comes with the Xcode command line tools, or `brew install python`
+```
+
+Without it the skill says so and checks by hand, which is slower and less reliable.
+
+### Optional: your STE dictionary
+
+Lessons are written in ASD-STE100 Simplified Technical English. The skill does not ship the STE specification. Get your own copy from ASD ([https://www.asd-ste100.org/](https://www.asd-ste100.org/)) and put it in one place for every course on this machine:
+
+```bash
+mkdir -p ~/.claude/ste100
+mv ~/Downloads/<the STE PDF> ~/.claude/ste100/
+```
+
+The skill checks words against the dictionary only once that folder also holds a `PERMISSION.md`: your own record of ASD's written permission to use the dictionary this way. Until then, it offers **Rules-only mode**. See [STE setup](../README.md#ste-setup) in the README.
 
 ---
 
@@ -288,6 +309,8 @@ cd /path/to/teach-from-source && git pull && ./scripts/install-cli.sh
 ```
 
 Existing workspaces are unaffected, and that's deliberate: **`assets/lesson.css` in a workspace is canonical for that workspace.** Once a course has evolved its own components, an update won't overwrite them. If you want a workspace to pick up an improved stylesheet, copy it in yourself, on purpose.
+
+The one exception is `assets/course_check.py`. It carries a version line, and the skill replaces the workspace copy when its own is newer, so every course checks lessons by the current rules.
 
 ---
 

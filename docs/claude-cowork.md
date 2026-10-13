@@ -157,6 +157,8 @@ Move or copy the source into it, or for the risky formats the *converted* source
 
 Keeping every course under one parent (`~/Downloads/LEARNING/`) is what makes the global instruction from Step 3 fire reliably. Match the path in the instruction to the path you actually use.
 
+**If you use the STE dictionary**, put your copy of the specification into this course's own `./ste100/` folder, with your `PERMISSION.md` next to it. Cowork cannot see `~/.claude/ste100/`, so the file is **not shared across courses**: each course folder needs its own copy. Without it the skill offers Rules-only mode. See [STE setup](../README.md#ste-setup) in the README.
+
 ---
 
 ## Step 6: Start the course
@@ -274,3 +276,5 @@ cd /path/to/teach-from-source && git pull && ./scripts/build-cowork-zip.sh
 Then re-upload it under **Settings -> Skills -> Add -> Upload skill**, replacing the existing `teach-from-source`.
 
 Existing workspaces are unaffected, and that's deliberate. **`assets/lesson.css` in a workspace is canonical for that workspace.** A course that has grown its own components won't get them overwritten by an update. If you want a workspace on a newer stylesheet, copy it in yourself, on purpose.
+
+The one exception is `assets/course_check.py`, the lesson checker. It carries a version line, and the skill replaces the workspace copy when its own is newer.

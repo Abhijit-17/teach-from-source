@@ -26,7 +26,17 @@ That's the failure mode this whole skill exists to prevent. So it inverts the de
 
 > **The Prime Directive.** Every substantive claim in a lesson must trace to a locator in your source. Not to a plausible paraphrase. To `[Ch. 4 Sec. 2, p. 118]`, hyperlinked to the extracted text the model actually read.
 
-When your source *doesn't* cover something your mission needs, the skill says so out loud, logs it under `## Gaps` in `SOURCES.md`, and either finds you a supplementary source or teaches it clearly flagged as outside-the-source. It never quietly papers over a hole with parametric knowledge.
+When your source *doesn't* cover something your mission needs, the skill says so out loud, logs it under `## Gaps` in `SOURCES.md`, and either recommends a supplementary source for you to approve or teaches it clearly flagged as outside-the-source. It never quietly papers over a hole with parametric knowledge.
+
+---
+
+## What's new in v1.1.0
+
+- **First principles, built in.** Every new concept is taught in five steps: the problem, the ground truths it rests on (each cited), a step-by-step build-up, the name last, and a "what if this ground truth were false?" test. Concepts you have already shown you know get a one-line recall instead.
+- **The source still wins.** Your sources set how deep a lesson goes. When first principles needs a foundation they don't cover, the skill logs a gap, recommends 1-3 freely available original sources, and fetches them only after you approve. Until then, that material appears in a visible "Outside the source" box.
+- **Lessons in Simplified Technical English.** Lessons, reference documents and glossary definitions follow ASD-STE100 (Issue 9): short sentences, one meaning per word, the author's own terms kept through the glossary. See [STE setup](#ste-setup).
+- **A lesson checker.** `assets/course_check.py` (Python 3, standard library only) runs before every lesson is handed over. It checks the charset line, the STE limits, the first-principles structure and the glossary locators, and prints `file:line` findings.
+- **Older courses keep working.** Existing lessons stay as they are. The new rules start at your next lesson, and the skill offers once to check and rewrite older ones.
 
 ---
 
@@ -46,7 +56,7 @@ When your source *doesn't* cover something your mission needs, the skill says so
 
 **Stateful across sessions.** The workspace is the memory. A returning session reads `MISSION.md`, `SOURCES.md`, the last two or three learning records, and `NOTES.md`, then starts warm without re-reading a single lesson or re-extracting a single section.
 
-**A glossary in the author's own words.** The skill uses the source's vocabulary even where it would phrase things differently, and records the divergence when the field's standard term differs. Terms get promoted to `GLOSSARY.md` only once *you* can use them correctly.
+**A glossary in the author's own words.** The skill uses the source's vocabulary even where it would phrase things differently, and records the divergence when the field's standard term differs. Every term gets a `GLOSSARY.md` entry, with a locator, no later than the lesson that first uses it. That entry is also what lets the author's terms into STE-checked lessons.
 
 **Multiple sources, and conflicts as material.** A workspace can hold a textbook, three papers, and a lecture. When they disagree, that's a lesson. Both locators get cited, the better-supported position gets called, and the resolution becomes a learning record.
 
@@ -110,17 +120,21 @@ teach-from-source/
 |       +-- SOURCE-MANIFEST-FORMAT.md <- SOURCES.md contract
 |       +-- GLOSSARY-FORMAT.md      <- GLOSSARY.md contract
 |       +-- LEARNING-RECORD-FORMAT.md <- learning-records/*.md contract
+|       +-- STE-RULES.md            <- STE Part 1 rules, summarised in our own words
 |       `-- assets/
 |           +-- lesson.css          <- the dark theme, single source of truth
-|           `-- quiz.js             <- ~40 lines, no dependencies
+|           +-- quiz.js             <- ~40 lines, no dependencies
+|           `-- course_check.py     <- the lesson checker, standard library only
 |
 +-- cowork/
 |   `-- teach-from-source/          <- zip this folder, upload to Cowork
 |       `-- ...                     <- identical, minus the two CLI-only keys
 |
-`-- scripts/
-    +-- install-cli.sh              <- symlink or copy into ~/.claude/skills/
-    `-- build-cowork-zip.sh         <- produce dist/teach-from-source.zip
++-- scripts/
+|   +-- install-cli.sh              <- symlink or copy into ~/.claude/skills/
+|   `-- build-cowork-zip.sh         <- produce dist/teach-from-source.zip
+|
+`-- tests/                          <- python3 -m unittest (not shipped in the skill)
 ```
 
 `SKILL.md` is the entry point in both builds and loads the rest progressively. The format files and `TOOLS.md` are only pulled in when they're actually needed, which keeps the resident cost of having the skill installed near zero.
@@ -211,7 +225,7 @@ A learning workspace: one directory per course, yours, plain files, no lock-in.
 ~/LEARNING/ddia/
 +-- MISSION.md                      # why you're reading this, and what "done" means
 +-- SOURCES.md                      # the spine: what's ingested, coverage, gaps, conflicts
-+-- GLOSSARY.md                     # the source's vocabulary, promoted only once you can use it
++-- GLOSSARY.md                     # the source's vocabulary, each term with its locator
 +-- NOTES.md                        # how you like to be taught
 +-- sources/
 |   `-- ddia/
@@ -244,6 +258,8 @@ The rules in `SKILL.md` that are worth arguing about, and why they're there:
 5. **`<meta charset="utf-8">` on line one of every HTML file.** These open over `file://`, where there's no `Content-Type` header to carry the encoding. Skip it and the lesson's typography renders as `â€”`: invisible to the model, glaring to you, usually in the first line of the header.
 6. **Coverage is not learning.** `practiced` needs evidence. And quiz results reach the model through *conversation*, not the browser. `quiz.js` writes to your `localStorage`, which the model can't read, so being asked "how did the quiz go?" is a feature.
 7. **Never block a lesson on an install.** Degrade deliberately, record the degradation, keep teaching.
+8. **First principles, bounded by the source.** Every new concept is derived from cited ground truths, but your sources decide how deep. The skill never fetches a new source without your approval, because that would change what counts as true for your course.
+9. **Write for a reader under load.** STE keeps sentences short and words unambiguous, which is what you want when the concept itself is hard. The author's terms stay, through the glossary, so a lesson still maps onto the page.
 
 ---
 
@@ -251,6 +267,27 @@ The rules in `SKILL.md` that are worth arguing about, and why they're there:
 
 - **Claude Code CLI version:** Claude Code, plus as much of the extraction toolchain as you care to install. `poppler` and `git` get you most of the way; `pandoc`, `trafilatura`, `calibre`, and `yt-dlp` unlock EPUB, web, Kindle, and video respectively. See [docs/claude-code-cli.md](./docs/claude-code-cli.md).
 - **Cowork version:** a Claude account with Cowork, and Claude Desktop if your sources are local files. Nothing to install, but read the sandbox toolchain table in [docs/claude-cowork.md](./docs/claude-cowork.md) before you point it at a Kindle file or a video.
+- **Both:** `python3` for the lesson checker (see [docs/claude-code-cli.md](./docs/claude-code-cli.md) for the CLI). If it is missing, the skill says so and checks lessons by hand.
+
+---
+
+## STE setup
+
+Lessons follow the writing rules of ASD-STE100 Simplified Technical English from the first lesson, with no setup. Checking every word against the STE **dictionary** needs two things from you:
+
+1. **Your own copy of the specification.** This repo does not ship it. Get it free from ASD: [https://www.asd-ste100.org/](https://www.asd-ste100.org/).
+2. **ASD's written permission.** The specification's copyright notice forbids reproducing it without written authority from ASD, and the dictionary check needs a word list extracted from your copy. Ask ASD for permission. When they grant it, save their reply as `PERMISSION.md` next to the specification.
+
+Where to put them:
+
+| Version | Folder |
+|---|---|
+| Claude Code CLI | `~/.claude/ste100/` (shared by every course), or a course's own `./ste100/` |
+| Cowork | each course's own `./ste100/`. Cowork cannot see `~/.claude/`, so each course needs its own copy. |
+
+Until both are in place, the skill offers **Rules-only mode**: lessons follow the STE writing rules, the dictionary is not checked, and each lesson says so in its header (`STE: writing rules only, dictionary not checked`). The skill looks again every session. Once it finds the dictionary and `PERMISSION.md`, it extracts the word list once, into that same folder, and offers to re-check your Rules-only lessons.
+
+[`STE-RULES.md`](./claude-code/teach-from-source/STE-RULES.md) summarises the writing rules in our own words: rule numbers, subjects and limits, no text from the specification.
 
 ---
 
