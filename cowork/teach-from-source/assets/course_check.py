@@ -59,7 +59,7 @@ BLOCK_TAGS = {"p", "li", "td", "th", "dd", "dt", "figcaption", "caption",
               "h1", "h2", "h3", "h4", "h5", "h6", "div", "section", "article",
               "aside", "header", "footer", "nav", "main", "figure", "ul", "ol",
               "dl", "table", "thead", "tbody", "tr", "details", "summary",
-              "blockquote", "pre", "body", "html"}
+              "blockquote", "pre", "body", "html", "button", "label", "option"}
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
 EXEMPT_MARK = "\ue000"  # stands in for one span of Exempt text

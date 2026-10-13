@@ -95,6 +95,9 @@ class SentenceLengthTest(WorkspaceTest):
         self.assertEqual(rules(findings), ["STE 6.3"])
         self.assertIn("26 words", findings[0].message)
 
+    def test_each_quiz_button_is_its_own_block(self):
+        self.assertEqual(self.check_one("quiz-buttons"), [])
+
     def test_paragraph_over_6_sentences(self):
         self.assertEqual(rules(self.check_one("long-paragraph")), ["STE 6.6"])
 
