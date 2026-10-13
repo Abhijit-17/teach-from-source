@@ -18,6 +18,8 @@ Checks:
              approved-words.tsv. Otherwise this is Rules-only mode.
   fp         every section.fp has the five fp-* steps, in order, as children
   gap        every .gap starts with the fixed Outside-the-source line
+  glossary   every GLOSSARY.md entry has a _Source_: locator line. Only
+             terms with one count as Technical nouns and verbs (ADR 0002)
 
 Exempt text (blockquote, cite, code, pre, .cite, .math, .name) is not checked
 but counts as one word in its sentence. A script cannot judge meaning, voice
@@ -60,18 +62,18 @@ BLOCK_TAGS = {"p", "li", "td", "th", "dd", "dt", "figcaption", "caption",
               "blockquote", "pre", "body", "html"}
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
-EXEMPT_MARK = ""  # stands in for one span of Exempt text
-GROUP_MARK = ""   # stands in for one parenthetical or quotation
+EXEMPT_MARK = "\ue000"  # stands in for one span of Exempt text
+GROUP_MARK = "\ue001"   # stands in for one parenthetical or quotation
 
-UNITS = {"ms", "s", "us", "µs", "ns", "min", "h", "b", "kb", "mb", "gb", "tb",
+UNITS = {"ms", "s", "us", "\u00b5s", "ns", "min", "h", "b", "kb", "mb", "gb", "tb",
          "kib", "mib", "gib", "bytes", "mm", "cm", "m", "km", "g", "kg", "%",
          "hz", "khz", "mhz", "ghz", "rpm"}
 NUMBER = re.compile(r"^[\d.,/%:+-]+$")
-SENTENCE_END = re.compile(r"[.!?][\"”’)\]]*(?=\s|$)")
+SENTENCE_END = re.compile(r"[.!?][\"\u201d\u2019)\]]*(?=\s|$)")
 CONTRACTION = re.compile(
-    r"\b\w+n[’']t\b|\b\w+[’'](?:re|ll|ve|m|d)\b|\b(?:it|that|there|what|here|who)[’']s\b",
+    r"\b\w+n[\u2019']t\b|\b\w+[\u2019'](?:re|ll|ve|m|d)\b|\b(?:it|that|there|what|here|who)[\u2019']s\b",
     re.IGNORECASE)
-WORD = re.compile(r"[A-Za-z][A-Za-z’'-]*")
+WORD = re.compile(r"[A-Za-z][A-Za-z\u2019'-]*")
 
 
 # --- word count (STE 8.4-8.7) ------------------------------------------------
@@ -86,8 +88,8 @@ def count_words(text):
     while prev != text:
         prev = text
         text = re.sub(r"\([^()]*\)", f" {GROUP_MARK} ", text)
-    text = re.sub(r"“[^”]*”|\"[^\"]*\"", f" {GROUP_MARK} ", text)
-    tokens = [t for t in text.split() if re.search(r"\w|[]", t)]
+    text = re.sub(r"\u201c[^\u201d]*\u201d|\"[^\"]*\"", f" {GROUP_MARK} ", text)
+    tokens = [t for t in text.split() if re.search(r"\w|[\ue000\ue001]", t)]
     count, i = 0, 0
     while i < len(tokens):
         count += 1
@@ -136,14 +138,46 @@ def load_dictionary(ste_dir):
     return words, f"STE: writing rules and dictionary ({tsv})"
 
 
+class GlossaryEntry:
+    def __init__(self, term, line):
+        self.term, self.line = term, line
+        self.definition = []  # (line number, text)
+        self.source = None    # the _Source_: locator
+
+
+
+
+def parse_glossary(path):
+    """Yield one GlossaryEntry per **Term**: heading.
+
+    source stays None when the entry has no _Source_: locator.
+    """
+    entry = None
+    for n, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+        m = re.match(r"^\*\*(.+?)\*\*:\s*$", line)
+        if m or line.startswith("#"):
+            if entry:
+                yield entry
+            entry = GlossaryEntry(m.group(1), n) if m else None
+        elif entry is None:
+            continue
+        elif line.startswith("_Source_:"):
+            entry.source = line[len("_Source_:"):].strip() or None
+        elif line.strip() and not line.startswith("_"):
+            entry.definition.append((n, line))
+    if entry:
+        yield entry
+
+
 def glossary_terms(workspace):
-    """Words of every **Term**: heading in GLOSSARY.md (Technical nouns and verbs)."""
+    """Words of every GLOSSARY.md term that has a _Source_: locator (ADR 0002)."""
     path = Path(workspace) / "GLOSSARY.md"
     if not path.is_file():
         return set()
     terms = set()
-    for m in re.finditer(r"^\*\*(.+?)\*\*:\s*$", path.read_text(encoding="utf-8"), re.M):
-        terms.update(w.lower() for w in WORD.findall(m.group(1)))
+    for e in parse_glossary(path):
+        if e.source:
+            terms.update(w.lower() for w in WORD.findall(e.term))
     return terms
 
 
@@ -204,9 +238,9 @@ class Checker:
             for offset, s in sentences:
                 n = count_words(s)
                 if n > limit:
-                    lead = " ".join(s.replace(EXEMPT_MARK, "…").split()[:8])
+                    lead = " ".join(s.replace(EXEMPT_MARK, "\u2026").split()[:8])
                     findings.append(Finding(path, block.line_at(offset), rule,
-                                            f"sentence has {n} words (max {limit}): {lead} …"))
+                                            f"sentence has {n} words (max {limit}): {lead} \u2026"))
             if block.tag == "p" and len(sentences) > PARAGRAPH_MAX:
                 findings.append(Finding(path, block.line_at(0), "STE 6.6",
                                         f"paragraph has {len(sentences)} sentences "
@@ -215,8 +249,8 @@ class Checker:
         if self.dictionary is None or (heading and text.strip() in FP_LABELS):
             return
         for m in WORD.finditer(text):
-            word = re.sub(r"[’']s$|[’']$", "", m.group()).strip("-")
-            if not word or "'" in word or "’" in word or self.allowed(word):
+            word = re.sub(r"[\u2019']s$|[\u2019']$", "", m.group()).strip("-")
+            if not word or "'" in word or "\u2019" in word or self.allowed(word):
                 continue
             findings.append(Finding(path, block.line_at(m.start()), "STE 1.1",
                                     f"'{word}' is not an Approved word or a GLOSSARY.md term"))
@@ -328,18 +362,14 @@ def check_html(path, checker, findings):
 
 
 def check_glossary(path, checker, findings):
-    """Check each definition in GLOSSARY.md as one descriptive paragraph."""
-    block, in_def = None, False
-    for n, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
-        if re.match(r"^\*\*(.+?)\*\*:\s*$", line):
-            block, in_def = Block("p", False), True
-        elif in_def and line.strip() and not line.startswith("_Avoid_"):
+    """Check each GLOSSARY.md definition as one descriptive paragraph."""
+    for e in parse_glossary(path):
+        if not e.source:
+            findings.append(Finding(str(path), e.line, "glossary",
+                                    f"'{e.term}' has no _Source_: locator line"))
+        block = Block("p", False)
+        for n, line in e.definition:
             block.add(line + "\n", n)
-            continue
-        elif in_def:
-            checker.check_block(str(path), block, findings)
-            in_def = False
-    if in_def:
         checker.check_block(str(path), block, findings)
 
 

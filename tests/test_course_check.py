@@ -159,10 +159,35 @@ class GlossaryTest(WorkspaceTest):
                 "\n**Follower**:\n"
                 "A node that reads all writes from the leader and keeps a copy of the "
                 "data so that it can take over when the leader stops at any time.\n"
+                "_Source_: [Ch. 5 §1, p. 153]\n"
             )
         findings = cc.check_paths([w.root / "GLOSSARY.md"], workspace=w.root, home=w.home)
         self.assertEqual(rules(findings), ["STE 6.3"])
-        self.assertEqual(findings[0].line, 18)
+        self.assertEqual(findings[0].line, 21)
+
+    def test_sample_glossary_is_clean_with_dictionary(self):
+        w = self.ws(dictionary=True, permission=True)
+        findings = cc.check_paths([w.root / "GLOSSARY.md"], workspace=w.root, home=w.home)
+        self.assertEqual(findings, [])
+
+    def append_unsourced_term(self, w):
+        with open(w.root / "GLOSSARY.md", "a") as g:
+            g.write("\n**Utilizes**:\nA made-up term with no locator.\n")
+
+    def test_entry_without_source_line_is_reported(self):
+        w = self.ws()
+        self.append_unsourced_term(w)
+        findings = cc.check_paths([w.root / "GLOSSARY.md"], workspace=w.root, home=w.home)
+        self.assertEqual(rules(findings), ["glossary"])
+        self.assertEqual(findings[0].line, 20)
+        self.assertIn("Utilizes", findings[0].message)
+
+    def test_term_without_source_line_is_not_a_technical_word(self):
+        w = self.ws("disallowed-word", dictionary=True, permission=True)
+        self.append_unsourced_term(w)
+        findings = w.check("disallowed-word")
+        self.assertEqual(rules(findings), ["STE 1.1"])
+        self.assertIn("utilizes", findings[0].message)
 
 
 class WordCountTest(unittest.TestCase):
