@@ -147,6 +147,12 @@ class StructureTest(WorkspaceTest):
     def test_reference_to_written_lesson_passes(self):
         self.assertEqual(self.check_one("0000-replica"), [])
 
+    def test_component_without_components_css_link(self):
+        findings = self.check_one("component-without-link")
+        self.assertEqual(rules(findings), ["components"])
+        self.assertEqual(findings[0].line, 5)
+        self.assertIn("components.css", findings[0].message)
+
 
 class DictionaryTest(WorkspaceTest):
     def test_disallowed_word_is_reported_with_permission(self):

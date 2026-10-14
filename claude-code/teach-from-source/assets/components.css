@@ -1,0 +1,57 @@
+@charset "UTF-8";
+/* components.css 1.1.0 */
+
+/* Skill components: styles for the markup SKILL.md defines.
+   Owned by the skill, not the workspace. The skill copies this file into
+   ./assets/ and may replace it when its version line is newer, so do not
+   edit it in a workspace: restyle a component in lesson.css instead.
+   Lessons that use a component link this file before lesson.css:
+     <link rel="stylesheet" href="../assets/components.css">
+     <link rel="stylesheet" href="../assets/lesson.css">
+   It uses the custom properties lesson.css defines. */
+
+/* ---- First-principles sequence: SKILL.md -> Teaching Method ----
+   One section.fp per New concept, five child blocks in fixed order.
+   Each step is a quiet rail; Name and Foundation test carry an accent,
+   because the term arrives last and the test is where it is earned. */
+
+.fp {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .3rem 1.1rem .9rem;
+  margin: 2rem 0;
+}
+.fp > div {
+  border-left: 2px solid var(--border-strong);
+  padding-left: 1rem;
+  margin: 1.1rem 0;
+}
+.fp > div > h3 {
+  font-size: .76rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 .4rem;
+}
+.fp > div > :last-child { margin-bottom: 0; }
+.fp .fp-name { border-left-color: var(--accent); }
+.fp .fp-test { border-left-color: var(--warn); }
+.fp .gap { margin: 1rem 0 0; }
+
+/* Known concept: a one-line recall linking to the lesson that built it. */
+.recall {
+  font-size: .92rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--accent-quiet);
+  padding-left: .8rem;
+}
+
+/* Taught concept: a Recall check, one question with the answer in <details>. */
+.recall-check {
+  border-left: 2px solid var(--accent-quiet);
+  padding-left: .8rem;
+  margin: 1rem 0;
+}
+.recall-check > :first-child { margin-top: 0; }
+.recall-check details { font-size: .92rem; color: var(--text-muted); }
+.recall-check summary { cursor: pointer; }

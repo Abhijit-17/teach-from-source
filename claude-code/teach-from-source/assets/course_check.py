@@ -21,6 +21,8 @@ Checks:
   recall     every .recall-check has a link to a lesson and a <details> answer
   lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
              file that exists. Refer to a future lesson by its topic
+  components a lesson that uses a skill component (.fp, .recall,
+             .recall-check) links assets/components.css
   glossary   every GLOSSARY.md entry has a _Source_: locator line. Only
              terms with one count as Technical nouns and verbs (ADR 0002)
 
@@ -51,6 +53,7 @@ PARAGRAPH_MAX = 6     # STE 6.6
 
 GAP_LINE = "Outside the source: not from your registered sources. Logged as a Gap."
 FP_STEPS = ("fp-problem", "fp-truths", "fp-buildup", "fp-name", "fp-test")
+COMPONENT_CLASSES = {"fp", "recall", "recall-check"}  # styled by components.css
 FP_LABELS = {"Problem", "Ground truths", "Build-up", "Name", "Foundation test"}
 
 EXEMPT_TAGS = {"blockquote", "cite", "code", "pre"}
@@ -275,6 +278,8 @@ class LessonParser(HTMLParser):
         self.fp = []         # open fp sections: [line, step classes seen]
         self.gaps = []       # open .gap elements: [line, text]
         self.recalls = []    # open .recall-check elements: [line, link, answer]
+        self.component_line = None   # first use of a COMPONENT_CLASSES class
+        self.components_linked = False
 
     def top(self, key):
         return self.stack[-1][key] if self.stack else False
@@ -293,6 +298,10 @@ class LessonParser(HTMLParser):
             self.fp[-1][1].extend(c for c in classes if c in FP_STEPS)
         if tag == "a":
             self.check_link(dict(attrs).get("href") or "", line)
+        if tag == "link" and Path(dict(attrs).get("href") or "").name == "components.css":
+            self.components_linked = True
+        if classes & COMPONENT_CLASSES and self.component_line is None:
+            self.component_line = line
         for r in self.recalls:
             r[1] = r[1] or (tag == "a" and bool(dict(attrs).get("href")))
             r[2] = r[2] or tag == "details"
@@ -384,6 +393,12 @@ class LessonParser(HTMLParser):
                     self.path, line, "lesson-ref",
                     f"lesson {n:04d} does not exist yet: refer to a future lesson by its topic"))
 
+    def finish(self):
+        if self.component_line and not self.components_linked:
+            self.findings.append(Finding(
+                self.path, self.component_line, "components",
+                'uses a skill component: link ../assets/components.css before lesson.css'))
+
     def close_recall(self):
         line, link, answer = self.recalls.pop()
         missing = [m for m, ok in (("a link to the lesson that built it", link),
@@ -404,6 +419,7 @@ def check_html(path, checker, findings, lessons_dir):
     parser.close()
     while parser.stack:
         parser.handle_endtag(parser.stack[-1]["tag"])
+    parser.finish()
 
 
 def check_glossary(path, checker, findings):

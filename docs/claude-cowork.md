@@ -51,8 +51,11 @@ teach-from-source/MISSION-FORMAT.md
 teach-from-source/SOURCE-MANIFEST-FORMAT.md
 teach-from-source/GLOSSARY-FORMAT.md
 teach-from-source/LEARNING-RECORD-FORMAT.md
+teach-from-source/STE-RULES.md
 teach-from-source/assets/lesson.css
+teach-from-source/assets/components.css
 teach-from-source/assets/quiz.js
+teach-from-source/assets/course_check.py
 ```
 
 > **Zip the `cowork/` build, not `claude-code/`.** The CLI build carries `disable-model-invocation: true` and `argument-hint` in its frontmatter. Cowork doesn't read either key, so they're harmless. But `disable-model-invocation` is a Claude Code concept, and shipping frontmatter to a host that doesn't implement it is exactly the kind of drift that makes a skill mysterious six months later. The script picks the right one for you.
@@ -185,7 +188,7 @@ lesson, [example-prompts.md](./example-prompts.md) has a structured brief to ada
 2. **Acquire.** A stable snapshot, and a short stable ID (`ddia`, `sicp`, `raft-paper`).
 3. **Map.** The whole source, cheaply, once, into `sources/<id>/OUTLINE.md`: units, locators, dependencies, and the **page offset** (printed and PDF page numbers almost never agree, and every citation afterwards depends on it).
 4. **Register** it in `SOURCES.md` with provenance and fetch date.
-5. **Set up `assets/`.** `lesson.css` and `quiz.js` land in the workspace. If the host didn't expose the skill as files, Claude writes them from the contracts in `SKILL.md` instead; an unstyled workspace is a worse failure than a slow one.
+5. **Set up `assets/`.** `lesson.css`, `components.css`, `quiz.js` and `course_check.py` land in the workspace. If the host didn't expose the skill as files, Claude writes them from the contracts in `SKILL.md` instead; an unstyled workspace is a worse failure than a slow one.
 6. **Establish the mission.** Expect to be interviewed. Answer properly.
 7. **Then** lesson `0001`.
 
@@ -277,4 +280,4 @@ Then re-upload it under **Settings -> Skills -> Add -> Upload skill**, replacing
 
 Existing workspaces are unaffected, and that's deliberate. **`assets/lesson.css` in a workspace is canonical for that workspace.** A course that has grown its own components won't get them overwritten by an update. If you want a workspace on a newer stylesheet, copy it in yourself, on purpose.
 
-The one exception is `assets/course_check.py`, the lesson checker. It carries a version line, and the skill replaces the workspace copy when its own is newer.
+The two exceptions are `assets/course_check.py`, the lesson checker, and `assets/components.css`, the styles for the skill's own lesson components. Each carries a version line, and the skill replaces the workspace copy when its own is newer. Restyle a component in `lesson.css`, which lessons link after `components.css`.

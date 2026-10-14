@@ -123,6 +123,7 @@ teach-from-source/
 |       +-- STE-RULES.md            <- STE Part 1 rules, summarised in our own words
 |       `-- assets/
 |           +-- lesson.css          <- the dark theme, single source of truth
+|           +-- components.css      <- styles for the skill's lesson components
 |           +-- quiz.js             <- ~40 lines, no dependencies
 |           `-- course_check.py     <- the lesson checker, standard library only
 |

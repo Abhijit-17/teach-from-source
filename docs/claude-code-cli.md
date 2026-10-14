@@ -204,7 +204,7 @@ The first session ingests before it teaches:
 1. **Acquire.** A stable local snapshot, and a short stable ID (`ddia`, `sicp`, `attention-paper`).
 2. **Map.** The whole source at low resolution into `sources/<id>/OUTLINE.md`: units, locators, dependencies, and the **page offset** (printed page numbers and PDF page numbers almost never agree, and every later citation depends on getting this right).
 3. **Register** it in `SOURCES.md` with provenance, coverage all-unread.
-4. **Set up `assets/`.** `lesson.css` and `quiz.js` get copied into the workspace.
+4. **Set up `assets/`.** `lesson.css`, `components.css`, `quiz.js` and `course_check.py` get copied into the workspace.
 5. **Establish the mission.** You'll get interviewed here. Answer properly.
 6. **Then** lesson `0001`.
 
@@ -310,7 +310,7 @@ cd /path/to/teach-from-source && git pull && ./scripts/install-cli.sh
 
 Existing workspaces are unaffected, and that's deliberate: **`assets/lesson.css` in a workspace is canonical for that workspace.** Once a course has evolved its own components, an update won't overwrite them. If you want a workspace to pick up an improved stylesheet, copy it in yourself, on purpose.
 
-The one exception is `assets/course_check.py`. It carries a version line, and the skill replaces the workspace copy when its own is newer, so every course checks lessons by the current rules.
+The two exceptions are `assets/course_check.py` and `assets/components.css`, the styles for the skill's own lesson components. Each carries a version line, and the skill replaces the workspace copy when its own is newer, so every course checks lessons by the current rules and can show the current components. Restyle a component in `lesson.css`, which lessons link after `components.css`.
 
 ---
 

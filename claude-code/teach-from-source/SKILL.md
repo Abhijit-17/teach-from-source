@@ -28,7 +28,7 @@ Treat the current directory as the workspace:
 - `./reference/*.html`: compressed, printable cheat-sheets and glossaries distilled from the source.
 - `GLOSSARY.md`: the workspace's canonical vocabulary, built from the source's own definitions. Format: [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
 - `./learning-records/*.md`: what the user has actually learned. `NNNN-<dash-case-name>.md`. Format: [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
-- `./assets/*`: reusable components shared across lessons. `lesson.css` (mandatory; see [Presentation](#presentation)), `quiz.js`, and `course_check.py` (see [Closing a Lesson](#closing-a-lesson)) are copied here from the skill on init. Diagram helpers and simulators join them as the workspace grows.
+- `./assets/*`: reusable components shared across lessons. `lesson.css` (mandatory; see [Presentation](#presentation)), `components.css`, `quiz.js`, and `course_check.py` (see [Closing a Lesson](#closing-a-lesson)) are copied here from the skill on init. Diagram helpers and simulators join them as the workspace grows.
 - `./ste100/`: optional. The user's own STE dictionary and its permission note. See [ASD-STE100 Writing](#asd-ste100-writing).
 - `NOTES.md`: user preferences and working notes.
 
@@ -53,9 +53,9 @@ Do not teach from a source you have not mapped. On a new source:
      -name SKILL.md -path '*teach-from-source*' 2>/dev/null | head -1)")
    cp "$SKILL_DIR"/assets/* ./assets/
    ```
-   If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation) and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
+   If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
 
-   `course_check.py` is the one asset the skill may replace later. Its second line carries a version (`python3 assets/course_check.py --version`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it. Never do this for `lesson.css` (see [Theme](#theme)).
+   `course_check.py` and `components.css` are the two assets the skill may replace later. Each carries a version on its second line (`python3 assets/course_check.py --version`, and `/* components.css 1.1.0 */`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it. Never do this for `lesson.css` (see [Theme](#theme)).
 5. **Establish the mission.** Ask why they want this material, and what "done" looks like: the whole book, one part, one capability. Write `MISSION.md`. Do not skip this because a title looks self-explanatory; "learn SICP" and "pass my compilers exam" produce completely different lesson sequences.
 6. **Only then** teach lesson `0001`.
 
@@ -227,6 +227,13 @@ Same reasoning downstream: `@charset "UTF-8";` as the literal first line of any 
 **Every lesson and reference document is dark-themed.** This is not a preference to re-litigate each session; it is the house style. No light-mode lesson, no `prefers-color-scheme` fork that renders white on someone's screen, no unstyled HTML.
 
 The workspace's `./assets/lesson.css` is the single source of truth. Copy it from this skill on init, link it from every document (`<link rel="stylesheet" href="../assets/lesson.css">`), and build on its custom properties rather than writing per-lesson colour. After init, the **workspace copy is canonical for that workspace**. Extend it in place, and never overwrite it with the skill's version unasked; a workspace that has evolved its own components is allowed to diverge. When a lesson needs a new reusable piece, extend the stylesheet or add a sibling component in `./assets/`. Never inline styles a second lesson would duplicate. That is what makes the workspace read as one course instead of a pile of one-offs.
+
+The skill's own components (`.fp`, `.recall`, `.recall-check`) are styled in `./assets/components.css`, which belongs to the skill, not the workspace: do not edit it, because a newer skill replaces it. A lesson that uses a component links it **before** `lesson.css`, so the workspace can restyle any component in `lesson.css`:
+```html
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/lesson.css">
+```
+`course_check.py` reports a lesson that uses a component without linking `components.css`.
 
 Within that theme, the target is still **beautiful**: clean typography, generous whitespace, a comfortable measure, Tufte-ish restraint. The user will come back to these.
 
