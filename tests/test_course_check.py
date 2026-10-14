@@ -124,6 +124,14 @@ class StructureTest(WorkspaceTest):
     def test_gap_without_fixed_first_line(self):
         self.assertEqual(rules(self.check_one("gap-without-fixed-line")), ["gap"])
 
+    def test_quiz_explanation_without_citation(self):
+        findings = self.check_one("explain-without-cite")
+        self.assertEqual(rules(findings), ["explain"])
+        self.assertEqual(findings[0].line, 9)
+
+    def test_quiz_explanation_in_a_gap_box_passes(self):
+        self.assertEqual(self.check_one("explain-with-gap"), [])
+
     def test_inline_quote_without_citation(self):
         findings = self.check_one("quote-without-cite")
         self.assertEqual(rules(findings), ["quote"])

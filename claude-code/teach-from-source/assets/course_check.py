@@ -24,6 +24,7 @@ Checks:
              every .illustration starts with the fixed Illustration line
   quote      every inline source quote <q> has a .cite citation in the same
              paragraph or list item
+  explain    every quiz .explain (an answer, so a claim) holds a .cite or a .gap
   recall     every .recall-check has a link to a lesson and a <details> answer
   lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
              file that exists. Refer to a future lesson by its topic
@@ -334,6 +335,7 @@ class LessonParser(HTMLParser):
         self.gaps = []       # open .gap and .illustration boxes: [line, text, class]
         self.recalls = []    # open .recall-check elements: [line, link, answer]
         self.component_line = None   # first use of a COMPONENT_CLASSES class
+        self.explains = []   # open .explain elements: [line, has .cite or .gap]
         self.components_linked = False
 
     def top(self, key):
@@ -357,6 +359,10 @@ class LessonParser(HTMLParser):
             self.components_linked = True
         if classes & COMPONENT_CLASSES and self.component_line is None:
             self.component_line = line
+        for x in self.explains:
+            x[1] = x[1] or bool(classes & {"cite", "gap"})
+        if "explain" in classes:
+            self.explains.append([line, False])
         if tag == "q" or "cite" in classes:
             block = next((e for e in reversed(self.stack) if e["tag"] in BLOCK_TAGS), None)
             if block is not None:
@@ -407,6 +413,12 @@ class LessonParser(HTMLParser):
                 self.close_fp()
             if e["classes"] & BOX_LINES.keys():
                 self.close_gap()
+            if "explain" in e["classes"]:
+                line, sourced = self.explains.pop()
+                if not sourced:
+                    self.findings.append(Finding(
+                        self.path, line, "explain",
+                        ".explain is an answer, so a claim: cite it with .cite, or put it in a .gap"))
             if "recall-check" in e["classes"]:
                 self.close_recall()
             if e["tag"] == tag:

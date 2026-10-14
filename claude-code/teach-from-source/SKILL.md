@@ -264,10 +264,12 @@ Dark presentation has a few non-obvious rules the stylesheet already encodes; ke
 
 Reading a chapter is not learning it. Every lesson ends in a **feedback loop** where the user does something and finds out immediately whether they were right:
 
-- Retrieval quizzes on the section's claims, built on `./assets/quiz.js`. See its header for the markup contract. All options identical in length and shape; never leak the answer through formatting. Each `.explain` block cites its locator.
+- Retrieval quizzes on the section's claims, built on `./assets/quiz.js`. See its header for the markup contract. All options identical in length and shape; never leak the answer through formatting. Each `.explain` block cites its locator (`course_check.py` reports one with no `.cite` or `.gap`).
 - Working the source's own exercises, with you marking them against the source
 - Applying a technique to the user's real material, then comparing against the source's criteria
 - Prediction-before-reveal: ask what the author concludes, *then* show the passage
+
+**Questions are free; answers are claims.** You write the quiz questions, the options, the exercises and the interview prompts yourself. They make no claim, so they need no citation and are not Gaps. A prompt may set the question in the user's own project, but it may state only consequences that the lessons have taught. Every answer is a claim: a quiz `.explain`, a model answer, and your critique of the user's interview answer. Cite each one to its locator, and put anything beyond the sources in a `.gap` (in chat, say plainly that it is outside the sources). A grading scale that `MISSION.md` sets, such as Hire or No Hire, is the course's own rule, not a claim about the topic.
 
 Interleave across chapters once two or more are covered. Re-test earlier sections on later visits, because spacing is what converts fluency into storage strength.
 
