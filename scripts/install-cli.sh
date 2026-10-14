@@ -8,7 +8,11 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="$REPO/claude-code/teach-from-source"
-DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}/teach-from-source"
+SKILLS="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+DEST="$SKILLS/teach-from-source"
+# Backups live beside the skills folder, never in it: Claude Code loads every
+# folder in it as a skill, and the skill's own setup search could find one.
+BACKUPS="$(dirname "$SKILLS")/skill-backups"
 
 [ -f "$SRC/SKILL.md" ] || { echo "error: $SRC/SKILL.md not found"; exit 1; }
 
@@ -20,11 +24,12 @@ if [ -L "$DEST" ]; then
   echo "note: removed previous symlink at $DEST"
 elif [ -d "$DEST" ]; then
   # Never delete a real directory; it may hold local edits. Move it aside.
-  BAK="$DEST.bak-$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$BACKUPS"
+  BAK="$BACKUPS/teach-from-source.bak-$(date +%Y%m%d-%H%M%S)"
   # date resolves to the second, so two installs in the same second would
   # otherwise collide and mv would nest the second one inside the first backup.
   n=2
-  while [ -e "$BAK" ]; do BAK="$DEST.bak-$(date +%Y%m%d-%H%M%S).$n"; n=$((n + 1)); done
+  while [ -e "$BAK" ]; do BAK="$BACKUPS/teach-from-source.bak-$(date +%Y%m%d-%H%M%S).$n"; n=$((n + 1)); done
   mv "$DEST" "$BAK"
   echo "note: existing install backed up to $BAK"
 elif [ -e "$DEST" ]; then
