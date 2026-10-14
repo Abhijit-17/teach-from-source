@@ -320,4 +320,11 @@ The two exceptions are `assets/course_check.py` and `assets/components.css`, the
 rm -rf ~/.claude/skills/teach-from-source
 ```
 
+`install-cli.sh` never deletes an earlier install: it moves it to `~/.claude/skill-backups/`. To remove those copies too (this also catches any that older versions of the script left in `~/.claude/skills/`):
+
+```bash
+find ~/.claude/skills ~/.claude/skill-backups -maxdepth 1 -name 'teach-from-source.bak-*' \
+  -exec rm -rf {} + 2>/dev/null
+```
+
 Your workspaces under `~/LEARNING/` are untouched. They're plain Markdown and HTML, and they keep working forever. That's the point.
