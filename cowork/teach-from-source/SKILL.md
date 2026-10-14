@@ -44,11 +44,12 @@ Do not teach from a source you have not mapped. On a new source:
 1. **Acquire and identify.** Get a stable local snapshot: confirm the file, fetch the page, clone the repo, pull the transcript. Assign a short stable ID (`atomic-habits`, `sicp`, `attention-paper`).
 2. **Map the structure.** Extract the table of contents / section headings into `./sources/<id>/OUTLINE.md`, with locators for each unit. Follow [INGESTION.md](./INGESTION.md) for per-medium mechanics.
 3. **Register it** in `SOURCES.md` with provenance and coverage all-unread.
-4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host (`~/.claude/skills/...` in Claude Code, an unpacked bundle elsewhere). Resolve it:
+4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host. `SKILL_DIR` is the folder this `SKILL.md` was loaded from: the base directory the host states when it loads the skill (Claude Code and Cowork do), or the path you read this file at. A machine can hold several copies of this skill (a synced copy from another host, an old install), possibly of other versions, so search only when no host stated one:
    ```
    mkdir -p assets
-   SKILL_DIR=$(dirname "$(find ~/.claude/skills /mnt/skills /opt/skills . \
-     -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
+   SKILL_DIR="<the skill's base directory>"   # if none was stated:
+   # SKILL_DIR=$(dirname "$(find ~/.claude/skills /mnt/skills /opt/skills . \
+   #   -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
    cp "$SKILL_DIR"/assets/* ./assets/
    ```
    If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
@@ -71,7 +72,7 @@ On re-entry to an existing workspace, read in this order, and nothing else up fr
 Then three quick checks, every session:
 
 - **The STE dictionary.** Look for it as described in [ASD-STE100 Writing](#asd-ste100-writing). If the course is in Rules-only mode and the dictionary and its permission note are now present, say so and offer to re-check the Rules-only lessons listed in `NOTES.md`.
-- **An upgrade.** When the skill's `course_check.py` or `components.css` is newer than the workspace's copy, or the workspace has none, the skill has changed since this course last ran. Copy both files in, then sweep the workspace's own working rules for conflicts with this skill: the conventions in `NOTES.md`, the Gaps in `SOURCES.md`, the lesson plan, and `GLOSSARY.md`. List each conflict with the wording you propose, change only what the user approves, and record the sweep in `NOTES.md` (`Upgrade sweep to skill 1.1.0, 14 Oct 2026: …`). Leave the goals and constraints in `MISSION.md` alone, because they are the user's, and leave old lessons as they are. Known conflicts when a course moves to 1.1.0:
+- **An upgrade.** When the skill's `course_check.py` or `components.css` (in `$SKILL_DIR/assets/`, resolved as in First Session step 4) is newer than the workspace's copy, or the workspace has none, the skill has changed since this course last ran. Copy both files in, then sweep the workspace's own working rules for conflicts with this skill: the conventions in `NOTES.md`, the Gaps in `SOURCES.md`, the lesson plan, and `GLOSSARY.md`. List each conflict with the wording you propose, change only what the user approves, and record the sweep in `NOTES.md` (`Upgrade sweep to skill 1.1.0, 14 Oct 2026: …`). Leave the goals and constraints in `MISSION.md` alone, because they are the user's, and leave old lessons as they are. Known conflicts when a course moves to 1.1.0:
   - The old marker `<span class="cite">outside the docs</span>` becomes the `.gap` box. `course_check.py` reports a `.cite` that is not a link.
   - A numbered lesson plan becomes topics in order.
   - A Gap for mappings onto the user's project, or for analogies, is removed: they are Illustrations.
