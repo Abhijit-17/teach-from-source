@@ -46,12 +46,12 @@ Do not teach from a source you have not mapped. On a new source:
 1. **Acquire and identify.** Get a stable local snapshot: confirm the file, fetch the page, clone the repo, pull the transcript. Assign a short stable ID (`atomic-habits`, `sicp`, `attention-paper`).
 2. **Map the structure.** Extract the table of contents / section headings into `./sources/<id>/OUTLINE.md`, with locators for each unit. Follow [INGESTION.md](./INGESTION.md) for per-medium mechanics.
 3. **Register it** in `SOURCES.md` with provenance and coverage all-unread.
-4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host. `SKILL_DIR` is the folder this `SKILL.md` was loaded from: the base directory the host states when it loads the skill (Claude Code and Cowork do), or the path you read this file at. A machine can hold several copies of this skill (a synced copy from another host, an old install), possibly of other versions, so search only when no host stated one:
+4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host. `SKILL_DIR` is the folder this `SKILL.md` was loaded from: the base directory the host states when it loads the skill (Claude Code states it), or the path you read this file at. A machine can hold several copies of this skill (a synced copy from another host, an old install), possibly of other versions, so search only when that folder is unknown or your shell cannot reach it:
    ```
    mkdir -p assets
-   SKILL_DIR="<the skill's base directory>"   # if none was stated:
-   # SKILL_DIR=$(dirname "$(find ~/.claude/skills /mnt/skills /opt/skills . \
-   #   -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
+   SKILL_DIR="<the skill's base directory>"
+   [ -f "$SKILL_DIR/SKILL.md" ] || SKILL_DIR=$(dirname "$(find ~/.claude/skills \
+     /mnt/skills /opt/skills . -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
    cp "$SKILL_DIR"/assets/* ./assets/
    ```
    If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
