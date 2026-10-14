@@ -53,7 +53,7 @@ Do not teach from a source you have not mapped. On a new source:
    ```
    If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
 
-   `course_check.py` and `components.css` are the two assets the skill may replace later. Each carries a version on its second line (`python3 assets/course_check.py --version`, and `/* components.css 1.1.0 */`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it. Never do this for `lesson.css` (see [Theme](#theme)).
+   `course_check.py` and `components.css` are the two assets the skill may replace later. Each carries a version on its second line (`python3 assets/course_check.py --version`, and `/* components.css 1.1.0 */`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it, and then do the upgrade sweep (see [Returning Sessions](#returning-sessions)). Never do this for `lesson.css` (see [Theme](#theme)).
 5. **Establish the mission.** Ask why they want this material, and what "done" looks like: the whole book, one part, one capability. Write `MISSION.md`. Do not skip this because a title looks self-explanatory; "learn SICP" and "pass my compilers exam" produce completely different lesson sequences.
 6. **Only then** teach lesson `0001`.
 
@@ -68,9 +68,15 @@ On re-entry to an existing workspace, read in this order, and nothing else up fr
 3. The **latest two or three** learning records, to see where the user actually is.
 4. `NOTES.md`. How they like to be taught.
 
-Then two quick checks, every session:
+Then three quick checks, every session:
 
 - **The STE dictionary.** Look for it as described in [ASD-STE100 Writing](#asd-ste100-writing). If the course is in Rules-only mode and the dictionary and its permission note are now present, say so and offer to re-check the Rules-only lessons listed in `NOTES.md`.
+- **An upgrade.** When the skill's `course_check.py` or `components.css` is newer than the workspace's copy, or the workspace has none, the skill has changed since this course last ran. Copy both files in, then sweep the workspace's own working rules for conflicts with this skill: the conventions in `NOTES.md`, the Gaps in `SOURCES.md`, and the lesson plan. List each conflict with the wording you propose, change only what the user approves, and record the sweep in `NOTES.md` (`Upgrade sweep to skill 1.1.0, 14 Oct 2026: …`). Leave the goals and constraints in `MISSION.md` alone, because they are the user's, and leave old lessons as they are. Known conflicts when a course moves to 1.1.0:
+  - The old marker `<span class="cite">outside the docs</span>` becomes the `.gap` box. `course_check.py` reports a `.cite` that is not a link.
+  - A numbered lesson plan becomes topics in order.
+  - A Gap for mappings onto the user's project, or for analogies, is removed: they are Illustrations.
+  - A Gap for interview questions is removed: questions are free, and answers are cited.
+  - Typed quote marks around source words become `<q>` in every lesson written or rewritten from now on.
 - **The cutover.** A workspace started before this skill taught first principles and wrote in STE has lessons but no cutover line in `NOTES.md`. Old lessons stay as they are. The new rules apply from the next lesson number: record it (`STE + first-principles from lesson 0013`). Offer **once** to run `course_check.py` on the old lessons and rewrite the ones the user picks, keeping each old version as an old copy (`NNNN-name.vX.Y.Z.html`). Never put an STE badge on an old lesson.
 
 That is enough to pick the next lesson. Do **not** re-read old lessons, do not re-open source files, and do not re-extract sections that already sit in `sources/<id>/sections/`. The workspace files exist precisely so a fresh session starts warm. Begin the session with a one-breath recap ("last time: X; today: Y") and a quick retrieval question from a previous lesson. That is your spacing mechanism.

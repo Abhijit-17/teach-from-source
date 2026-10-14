@@ -25,6 +25,7 @@ Checks:
   quote      every inline source quote <q> has a .cite citation in the same
              paragraph or list item
   explain    every quiz .explain (an answer, so a claim) holds a .cite or a .gap
+  cite       every .cite is a link (<a href>). Only a link counts as a citation
   recall     every .recall-check has a link to a lesson and a <details> answer
   lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
              file that exists. Refer to a future lesson by its topic
@@ -359,11 +360,16 @@ class LessonParser(HTMLParser):
             self.components_linked = True
         if classes & COMPONENT_CLASSES and self.component_line is None:
             self.component_line = line
+        cite = "cite" in classes
+        if cite and not (tag == "a" and dict(attrs).get("href")):
+            cite = False
+            self.findings.append(Finding(self.path, line, "cite",
+                                         ".cite must be a link: <a class=\"cite\" href=\"...\">"))
         for x in self.explains:
-            x[1] = x[1] or bool(classes & {"cite", "gap"})
+            x[1] = x[1] or cite or "gap" in classes
         if "explain" in classes:
             self.explains.append([line, False])
-        if tag == "q" or "cite" in classes:
+        if tag == "q" or cite:
             block = next((e for e in reversed(self.stack) if e["tag"] in BLOCK_TAGS), None)
             if block is not None:
                 key = "q_line" if tag == "q" else "has_cite"
