@@ -6,6 +6,8 @@ Usage, from the workspace root:
     python3 assets/course_check.py [FILE ...]
 
 With no FILE, checks lessons/*.html, reference/*.html and GLOSSARY.md.
+Old lesson copies (NNNN-name.vX.Y.Z.html) are always skipped, with a count
+on stderr: they were written under earlier rules.
 Prints one finding per line as `file:line: [rule] message` and exits 1 when
 there are any. One line on stderr says which STE mode ran.
 
@@ -82,6 +84,11 @@ CONTRACTION = re.compile(
 WORD = re.compile(r"[A-Za-z][A-Za-z\u2019'-]*")
 LESSON_NUMBER = re.compile(r"\blessons?\s+(\d{1,4})\b", re.IGNORECASE)
 LESSON_FILE = re.compile(r"^\d{4}-[^/]+\.html$")
+OLD_COPY = re.compile(r"\.v\d+\.\d+\.\d+\.html$")
+
+
+def is_old_copy(path):
+    return bool(OLD_COPY.search(Path(path).name))
 
 
 # --- word count (STE 8.4-8.7) ------------------------------------------------
@@ -387,7 +394,8 @@ class LessonParser(HTMLParser):
         start = self.getpos()[0]
         for m in LESSON_NUMBER.finditer(data):
             n = int(m.group(1))
-            if not any(self.lessons_dir.glob(f"{n:04d}-*.html")):
+            if not any(p for p in self.lessons_dir.glob(f"{n:04d}-*.html")
+                       if not is_old_copy(p)):
                 line = start + data.count("\n", 0, m.start())
                 self.findings.append(Finding(
                     self.path, line, "lesson-ref",
@@ -439,6 +447,8 @@ def check_paths(paths, workspace, home):
     checker = Checker(dictionary, glossary_terms(workspace))
     findings = []
     for p in paths:
+        if is_old_copy(p):
+            continue
         if str(p).endswith(".md"):
             check_glossary(p, checker, findings)
         else:
@@ -461,6 +471,10 @@ def main(argv=None):
 
     _, mode = load_dictionary(find_ste_dir(workspace, home))
     print(mode, file=sys.stderr)
+    old = sum(1 for p in paths if is_old_copy(p))
+    if old:
+        print(f"skipped {old} old lesson {'copy' if old == 1 else 'copies'} (NNNN-name.vX.Y.Z.html)",
+              file=sys.stderr)
     findings = check_paths(paths, workspace, home)
     for f in findings:
         print(f"{f.file}:{f.line}: [{f.rule}] {f.message}")

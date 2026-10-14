@@ -22,7 +22,7 @@ Treat the current directory as the workspace:
 - `MISSION.md`: *why* the user wants this material. Grounds all teaching. Format: [MISSION-FORMAT.md](./MISSION-FORMAT.md).
 - `SOURCES.md`: the manifest of ingested material: every source, its ID, its structure map, its coverage state. This is the spine of the workspace. Format: [SOURCE-MANIFEST-FORMAT.md](./SOURCE-MANIFEST-FORMAT.md).
 - `./sources/<id>/`: per-source working data: the acquired snapshot, the outline, extracted section text, figure crops. Never edited by the user; regenerable. See [INGESTION.md](./INGESTION.md).
-- `./lessons/*.html`: the primary unit of teaching. `NNNN-<dash-case-name>.html`.
+- `./lessons/*.html`: the primary unit of teaching. `NNNN-<dash-case-name>.html`. When a lesson is rewritten, its old version stays beside it as `NNNN-<dash-case-name>.vX.Y.Z.html`, where X.Y.Z is the skill version that wrote it. `course_check.py` skips old copies and says how many it skipped.
 - `./reference/*.html`: compressed, printable cheat-sheets and glossaries distilled from the source.
 - `GLOSSARY.md`: the workspace's canonical vocabulary, built from the source's own definitions. Format: [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
 - `./learning-records/*.md`: what the user has actually learned. `NNNN-<dash-case-name>.md`. Format: [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
@@ -71,7 +71,7 @@ On re-entry to an existing workspace, read in this order, and nothing else up fr
 Then two quick checks, every session:
 
 - **The STE dictionary.** Look for it as described in [ASD-STE100 Writing](#asd-ste100-writing). If the course is in Rules-only mode and the dictionary and its permission note are now present, say so and offer to re-check the Rules-only lessons listed in `NOTES.md`.
-- **The cutover.** A workspace started before this skill taught first principles and wrote in STE has lessons but no cutover line in `NOTES.md`. Old lessons stay as they are. The new rules apply from the next lesson number: record it (`STE + first-principles from lesson 0013`). Offer **once** to run `course_check.py` on the old lessons and rewrite the ones the user picks. Never put an STE badge on an old lesson.
+- **The cutover.** A workspace started before this skill taught first principles and wrote in STE has lessons but no cutover line in `NOTES.md`. Old lessons stay as they are. The new rules apply from the next lesson number: record it (`STE + first-principles from lesson 0013`). Offer **once** to run `course_check.py` on the old lessons and rewrite the ones the user picks, keeping each old version as an old copy (`NNNN-name.vX.Y.Z.html`). Never put an STE badge on an old lesson.
 
 That is enough to pick the next lesson. Do **not** re-read old lessons, do not re-open source files, and do not re-extract sections that already sit in `sources/<id>/sections/`. The workspace files exist precisely so a fresh session starts warm. Begin the session with a one-breath recap ("last time: X; today: Y") and a quick retrieval question from a previous lesson. That is your spacing mechanism.
 

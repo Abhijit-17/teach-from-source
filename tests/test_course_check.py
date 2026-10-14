@@ -147,6 +147,13 @@ class StructureTest(WorkspaceTest):
     def test_reference_to_written_lesson_passes(self):
         self.assertEqual(self.check_one("0000-replica"), [])
 
+    def test_old_lesson_copy_is_skipped(self):
+        self.assertEqual(self.check_one("0000-replica.v1.0.2"), [])
+
+    def test_old_copy_does_not_make_a_lesson_exist(self):
+        w = self.ws("lesson-number-only-old-copy", "0005-later.v1.0.2")
+        self.assertEqual(rules(w.check("lesson-number-only-old-copy")), ["lesson-ref"])
+
     def test_component_without_components_css_link(self):
         findings = self.check_one("component-without-link")
         self.assertEqual(rules(findings), ["components"])
@@ -250,6 +257,11 @@ class CommandLineTest(WorkspaceTest):
     def test_mode_line_on_stderr_in_rules_only_mode(self):
         r = self.run_cli(self.ws("clean"), "clean")
         self.assertIn("STE: writing rules only, dictionary not checked", r.stderr)
+
+    def test_old_copy_matched_by_a_pattern_is_skipped_and_reported(self):
+        r = self.run_cli(self.ws("0000-replica.v1.0.2"), "0000-replica", "0000-replica.v1.0.2")
+        self.assertEqual((r.returncode, r.stdout), (0, ""))
+        self.assertIn("skipped 1 old lesson copy", r.stderr)
 
     def test_version_flag(self):
         r = subprocess.run([sys.executable, str(SCRIPT), "--version"],
