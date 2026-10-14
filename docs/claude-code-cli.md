@@ -174,6 +174,8 @@ git init && git commit --allow-empty -m "start: DDIA workspace"
 
 Invoke it explicitly. `disable-model-invocation: true` in the CLI build means Claude will never fire this at you on its own. A stateful, file-writing, multi-session teaching engine shouldn't launch because you said the word "teach" in passing.
 
+> **If you also uploaded the Cowork build.** Claude Code offers that copy too, as `anthropic-skills:teach-from-source`, and the Cowork build has no `disable-model-invocation`. So a plain "teach me…" prompt can start it, at whatever version you last uploaded. Start every course with `/teach-from-source`, and keep both hosts on the same version (see [Updating](#updating)).
+
 Say two things: **the source** and **why you want it**.
 
 ```
@@ -308,6 +310,8 @@ Copied:
 ```bash
 cd /path/to/teach-from-source && git pull && ./scripts/install-cli.sh
 ```
+
+If you also use Cowork, upload the new build there in the same sitting ([Cowork guide: Updating the skill](./claude-cowork.md#updating-the-skill)). Claude Code can run the Cowork copy too, so both hosts should run the same version.
 
 Existing workspaces are unaffected, and that's deliberate: **`assets/lesson.css` in a workspace is canonical for that workspace.** Once a course has evolved its own components, an update won't overwrite them. If you want a workspace to pick up an improved stylesheet, copy it in yourself, on purpose.
 
