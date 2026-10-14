@@ -27,8 +27,9 @@ Checks:
   explain    every quiz .explain (an answer, so a claim) holds a .cite or a .gap
   cite       every .cite is a link (<a href>). Only a link counts as a citation
   recall     every .recall-check has a link to a lesson and a <details> answer
-  lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
-             file that exists. Refer to a future lesson by its topic
+  lesson-ref every "Lesson NNNN" outside Exempt text, and every link to
+             NNNN-*.html, names a lesson file that exists. Refer to a future
+             lesson by its topic
   components a lesson that uses a skill component (.fp, .recall,
              .recall-check, .illustration) links assets/components.css
   glossary   every GLOSSARY.md entry has a _Source_: line that is a locator
@@ -101,6 +102,10 @@ OLD_COPY = re.compile(r"\.v\d+\.\d+\.\d+\.html$")
 
 def is_old_copy(path):
     return bool(OLD_COPY.search(Path(path).name))
+
+
+def is_lesson_link(href):
+    return bool(LESSON_FILE.match(Path(href.split("#", 1)[0].split("?", 1)[0]).name))
 
 
 # --- word count (STE 8.4-8.7) ------------------------------------------------
@@ -375,7 +380,7 @@ class LessonParser(HTMLParser):
                 key = "q_line" if tag == "q" else "has_cite"
                 block.setdefault(key, line if tag == "q" else True)
         for r in self.recalls:
-            r[1] = r[1] or (tag == "a" and bool(dict(attrs).get("href")))
+            r[1] = r[1] or (tag == "a" and is_lesson_link(dict(attrs).get("href") or ""))
             r[2] = r[2] or tag == "details"
         if tag in VOID_TAGS:
             return
@@ -433,7 +438,7 @@ class LessonParser(HTMLParser):
     def handle_data(self, data):
         for g in self.gaps:
             g[1] += data
-        if not self.top("skip"):
+        if not self.top("skip") and not self.top("exempt"):
             self.check_lesson_numbers(data)
         if self.top("skip") or self.top("exempt") or not self.blocks:
             return
@@ -456,7 +461,6 @@ class LessonParser(HTMLParser):
         if not " ".join(text.split()).startswith(BOX_LINES[box]):
             self.findings.append(Finding(self.path, line, box,
                                          f".{box} must start with: {BOX_LINES[box]}"))
-
 
     def check_link(self, href, line):
         target = href.split("#", 1)[0].split("?", 1)[0]

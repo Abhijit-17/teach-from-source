@@ -156,6 +156,14 @@ class StructureTest(WorkspaceTest):
         self.assertEqual(rules(findings), ["recall"])
         self.assertIn("link", findings[0].message)
 
+    def test_recall_check_whose_only_link_is_not_a_lesson(self):
+        findings = self.check_one("recall-check-with-only-a-source-link")
+        self.assertEqual(rules(findings), ["recall"])
+        self.assertIn("link", findings[0].message)
+
+    def test_lesson_number_inside_exempt_text_is_not_checked(self):
+        self.assertEqual(self.check_one("lesson-number-in-quote"), [])
+
     def test_lesson_number_with_no_lesson_file(self):
         findings = self.check_one("lesson-number-not-written")
         self.assertEqual(rules(findings), ["lesson-ref"])

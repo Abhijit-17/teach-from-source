@@ -188,7 +188,7 @@ lesson, [example-prompts.md](./example-prompts.md) has a structured brief to ada
 2. **Acquire.** A stable snapshot, and a short stable ID (`ddia`, `sicp`, `raft-paper`).
 3. **Map.** The whole source, cheaply, once, into `sources/<id>/OUTLINE.md`: units, locators, dependencies, and the **page offset** (printed and PDF page numbers almost never agree, and every citation afterwards depends on it).
 4. **Register** it in `SOURCES.md` with provenance and fetch date.
-5. **Set up `assets/`.** `lesson.css`, `components.css`, `quiz.js` and `course_check.py` land in the workspace. If the host didn't expose the skill as files, Claude writes them from the contracts in `SKILL.md` instead; an unstyled workspace is a worse failure than a slow one.
+5. **Set up `assets/`.** `lesson.css`, `components.css`, `quiz.js` and `course_check.py` land in the workspace. If the host didn't expose the skill as files, Claude writes the stylesheets and `quiz.js` from the contracts in `SKILL.md` instead; an unstyled workspace is a worse failure than a slow one.
 6. **Establish the mission.** Expect to be interviewed. Answer properly.
 7. **Then** lesson `0001`.
 
