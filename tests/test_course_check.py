@@ -184,6 +184,12 @@ class StructureTest(WorkspaceTest):
         w = self.ws("lesson-number-only-old-copy", "0005-later.v1.0.2")
         self.assertEqual(rules(w.check("lesson-number-only-old-copy")), ["lesson-ref"])
 
+    def test_components_css_linked_after_lesson_css(self):
+        findings = self.check_one("components-after-lesson-css")
+        self.assertEqual(rules(findings), ["components"])
+        self.assertEqual(findings[0].line, 5)
+        self.assertIn("before lesson.css", findings[0].message)
+
     def test_component_without_components_css_link(self):
         findings = self.check_one("component-without-link")
         self.assertEqual(rules(findings), ["components"])

@@ -31,7 +31,8 @@ Checks:
              NNNN-*.html, names a lesson file that exists. Refer to a future
              lesson by its topic
   components a lesson that uses a skill component (.fp, .recall,
-             .recall-check, .illustration) links assets/components.css
+             .recall-check, .illustration) links assets/components.css,
+             and links it before lesson.css
   glossary   every GLOSSARY.md entry has a _Source_: line that is a locator
              (a [...] citation or a link) or exactly
              "Outside-the-source (Gap: <name>)", where <name> is the bold name
@@ -349,6 +350,7 @@ class LessonParser(HTMLParser):
         self.component_line = None   # first use of a COMPONENT_CLASSES class
         self.explains = []   # open .explain elements: [line, has .cite or .gap]
         self.components_linked = False
+        self.lesson_css_linked = False
 
     def top(self, key):
         return self.stack[-1][key] if self.stack else False
@@ -367,8 +369,15 @@ class LessonParser(HTMLParser):
             self.fp[-1][1].extend(c for c in classes if c in FP_STEPS)
         if tag == "a":
             self.check_link(dict(attrs).get("href") or "", line)
-        if tag == "link" and Path(dict(attrs).get("href") or "").name == "components.css":
+        sheet = Path(dict(attrs).get("href") or "").name if tag == "link" else ""
+        if sheet == "lesson.css":
+            self.lesson_css_linked = True
+        if sheet == "components.css":
             self.components_linked = True
+            if self.lesson_css_linked:
+                self.findings.append(Finding(
+                    self.path, line, "components",
+                    "link components.css before lesson.css, so lesson.css can restyle a component"))
         if classes & COMPONENT_CLASSES and self.component_line is None:
             self.component_line = line
         cite = "cite" in classes
