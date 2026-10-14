@@ -93,9 +93,9 @@ A word listed in the STE dictionary, usable only in its one approved meaning and
 _Avoid_: allowed word, simple word
 
 **Technical noun**:
-A noun defined by a registered source and recorded in `GLOSSARY.md` with its locator, usable in lessons although it is not an Approved word.
+A noun defined by a registered source and recorded in `GLOSSARY.md` with its locator, usable in lessons although it is not an Approved word. A common name that no registered source gives also counts when its entry is marked Outside-the-source and names its Gap.
 _Avoid_: technical name (pre-Issue 9 term), jargon, keyword
 
 **Technical verb**:
-A verb defined or used as a term by a registered source and recorded in `GLOSSARY.md` with its locator, usable in lessons although it is not an Approved word. This is broader than STE Rule 1.12 technical-verb categories.
+A verb defined or used as a term by a registered source and recorded in `GLOSSARY.md` with its locator, usable in lessons although it is not an Approved word. This is broader than STE Rule 1.12 technical-verb categories. A common name that no registered source gives also counts when its entry is marked Outside-the-source and names its Gap.
 _Avoid_: domain verb, jargon

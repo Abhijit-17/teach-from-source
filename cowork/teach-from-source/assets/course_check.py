@@ -25,8 +25,11 @@ Checks:
              file that exists. Refer to a future lesson by its topic
   components a lesson that uses a skill component (.fp, .recall,
              .recall-check) links assets/components.css
-  glossary   every GLOSSARY.md entry has a _Source_: locator line. Only
-             terms with one count as Technical nouns and verbs (ADR 0002)
+  glossary   every GLOSSARY.md entry has a _Source_: line that is a locator
+             (a [...] citation or a link) or exactly
+             "Outside-the-source (Gap: <name>)", where <name> is a Gap under
+             ## Gaps in SOURCES.md. Only terms with a valid line count as
+             Technical nouns and verbs (ADR 0002)
 
 Exempt text (blockquote, cite, code, pre, .cite, .math, .name) is not checked
 but counts as one word in its sentence. A script cannot judge meaning, voice
@@ -184,14 +187,51 @@ def parse_glossary(path):
         yield entry
 
 
+LOCATOR = re.compile(r"\[[^\]]+\]|https?://")
+OUTSIDE_SOURCE = re.compile(r"^Outside-the-source \(Gap: (.+)\)$")
+
+
+def gap_names(workspace):
+    """The bold names of the items under ## Gaps in SOURCES.md."""
+    path = Path(workspace) / "SOURCES.md"
+    if not path.is_file():
+        return set()
+    names, in_gaps = set(), False
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## "):
+            in_gaps = line.strip() == "## Gaps"
+        elif in_gaps:
+            m = re.match(r"^- \*\*(.+?)\*\*", line)
+            if m:
+                names.add(m.group(1).strip())
+    return names
+
+
+def source_problem(entry, gaps):
+    """Why an entry's _Source_: line does not count, or None when it does."""
+    if not entry.source:
+        return f"'{entry.term}' has no _Source_: locator line"
+    m = OUTSIDE_SOURCE.match(entry.source)
+    if m:
+        if m.group(1).strip() not in gaps:
+            return (f"'{entry.term}' names Gap '{m.group(1).strip()}', "
+                    "which is not under ## Gaps in SOURCES.md")
+        return None
+    if not LOCATOR.search(entry.source):
+        return (f"'{entry.term}': _Source_: {entry.source!r} is not a locator. "
+                "Use a [...] citation, a link, or Outside-the-source (Gap: <name>)")
+    return None
+
+
 def glossary_terms(workspace):
-    """Words of every GLOSSARY.md term that has a _Source_: locator (ADR 0002)."""
+    """Words of every GLOSSARY.md term with a valid _Source_: line (ADR 0002)."""
     path = Path(workspace) / "GLOSSARY.md"
     if not path.is_file():
         return set()
+    gaps = gap_names(workspace)
     terms = set()
     for e in parse_glossary(path):
-        if e.source:
+        if source_problem(e, gaps) is None:
             terms.update(w.lower() for w in WORD.findall(e.term))
     return terms
 
@@ -432,10 +472,11 @@ def check_html(path, checker, findings, lessons_dir):
 
 def check_glossary(path, checker, findings):
     """Check each GLOSSARY.md definition as one descriptive paragraph."""
+    gaps = gap_names(Path(path).parent)
     for e in parse_glossary(path):
-        if not e.source:
-            findings.append(Finding(str(path), e.line, "glossary",
-                                    f"'{e.term}' has no _Source_: locator line"))
+        problem = source_problem(e, gaps)
+        if problem:
+            findings.append(Finding(str(path), e.line, "glossary", problem))
         block = Block("p", False)
         for n, line in e.definition:
             block.add(line + "\n", n)

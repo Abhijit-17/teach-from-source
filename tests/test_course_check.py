@@ -231,6 +231,50 @@ class GlossaryTest(WorkspaceTest):
         self.assertIn("utilizes", findings[0].message)
 
 
+    def append_entry(self, w, source, term="Utilizes"):
+        with open(w.root / "GLOSSARY.md", "a") as g:
+            g.write(f"\n**{term}**:\nA made-up term.\n_Source_: {source}\n")
+
+    def log_gap(self, w, name):
+        (w.root / "SOURCES.md").write_text(
+            f"# Sources\n\n## Gaps\n\n- **{name}** (lesson 0003). No source covers it.\n\n## Conflicts\n")
+
+    def check_glossary(self, w):
+        return cc.check_paths([w.root / "GLOSSARY.md"], workspace=w.root, home=w.home)
+
+    def test_source_line_that_is_not_a_locator_is_reported(self):
+        w = self.ws()
+        self.append_entry(w, "common usage")
+        findings = self.check_glossary(w)
+        self.assertEqual(rules(findings), ["glossary"])
+        self.assertIn("not a locator", findings[0].message)
+
+    def test_term_with_a_fake_locator_is_not_a_technical_word(self):
+        w = self.ws("disallowed-word", dictionary=True, permission=True)
+        self.append_entry(w, "common usage")
+        self.assertEqual(rules(w.check("disallowed-word")), ["STE 1.1"])
+
+    def test_outside_the_source_entry_with_a_logged_gap_is_clean(self):
+        w = self.ws()
+        self.log_gap(w, "Made-up words")
+        self.append_entry(w, "Outside-the-source (Gap: Made-up words)")
+        self.assertEqual(self.check_glossary(w), [])
+
+    def test_outside_the_source_entry_is_a_technical_word(self):
+        w = self.ws("disallowed-word", dictionary=True, permission=True)
+        self.log_gap(w, "Made-up words")
+        self.append_entry(w, "Outside-the-source (Gap: Made-up words)")
+        self.assertEqual(w.check("disallowed-word"), [])
+
+    def test_outside_the_source_entry_naming_an_unlogged_gap(self):
+        w = self.ws()
+        self.log_gap(w, "Some other gap")
+        self.append_entry(w, "Outside-the-source (Gap: Made-up words)")
+        findings = self.check_glossary(w)
+        self.assertEqual(rules(findings), ["glossary"])
+        self.assertIn("Made-up words", findings[0].message)
+
+
 class WordCountTest(unittest.TestCase):
     def test_number_with_unit_parentheses_and_hyphens_count_as_one(self):
         text = "Set the value to 20 ms (see the note) on the well-known node."

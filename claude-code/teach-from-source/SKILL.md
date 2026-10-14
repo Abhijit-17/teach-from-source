@@ -163,6 +163,12 @@ When a Ground truth or a Build-up step needs something no registered source cove
    ```
    If the item is a Ground truth, the `.gap` goes inside that `.fp-truths` block.
 
+   If the item is a concept whose common name no registered source gives, teach its Name step inside the `.gap` too, and give the name a `GLOSSARY.md` entry whose source line names the Gap exactly as `SOURCES.md` does:
+   ```
+   _Source_: Outside-the-source (Gap: Coordinator vs a class with too many responsibilities)
+   ```
+   The term then counts as a Technical noun or verb, so later lessons can use it. When a Supplementary source for it is approved, replace the line with that source's locator.
+
 ## ASD-STE100 Writing
 
 Course material is written in **STE**: ASD-STE100 Simplified Technical English, Issue 9. Course material is lessons, reference documents, and the definitions in `GLOSSARY.md`. `SOURCES.md`, `NOTES.md`, outlines, learning records and chat are not Course material. [STE-RULES.md](./STE-RULES.md) is a short summary of the writing rules in this skill's own words. `course_check.py` enforces the numeric limits.
@@ -187,7 +193,7 @@ Text the user must *do* (exercise steps, setup instructions) is procedural: put 
 
 ### Words: Approved words, Technical nouns, Technical verbs
 
-Every word must be either an Approved word, used in its one approved meaning and part of speech, or a term the sources define. Any term with a `GLOSSARY.md` entry and a `_Source_:` locator counts as a Technical noun or Technical verb. This deliberately includes author verbs such as "memoize" that STE's own technical-verb categories would not cover, so lessons keep the author's vocabulary. A source term with no entry may not appear in lesson prose until it gets one.
+Every word must be either an Approved word, used in its one approved meaning and part of speech, or a term the sources define. Any term with a `GLOSSARY.md` entry and a valid `_Source_:` line (a locator, or an Outside-the-source line that names a logged Gap) counts as a Technical noun or Technical verb. This deliberately includes author verbs such as "memoize" that STE's own technical-verb categories would not cover, so lessons keep the author's vocabulary. A source term with no entry may not appear in lesson prose until it gets one.
 
 ### The STE dictionary and its permission gate
 
