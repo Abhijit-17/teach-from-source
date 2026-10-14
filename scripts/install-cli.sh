@@ -18,6 +18,18 @@ BACKUPS="$(dirname "$SKILLS")/skill-backups"
 
 mkdir -p "$(dirname "$DEST")"
 
+# Earlier versions of this script left their backups inside the skills
+# folder. Move any found there out, for the same reason.
+for OLD in "$SKILLS"/teach-from-source.bak-*; do
+  [ -e "$OLD" ] || [ -L "$OLD" ] || continue   # the pattern matched nothing
+  mkdir -p "$BACKUPS"
+  TO="$BACKUPS/$(basename "$OLD")"
+  n=2
+  while [ -e "$TO" ] || [ -L "$TO" ]; do TO="$BACKUPS/$(basename "$OLD").$n"; n=$((n + 1)); done
+  mv "$OLD" "$TO"
+  echo "note: moved an old backup out of the skills folder to $TO"
+done
+
 if [ -L "$DEST" ]; then
   # A symlink from a previous --link install: drop the link, never the target.
   rm -f "$DEST"
