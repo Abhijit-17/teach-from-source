@@ -48,7 +48,7 @@ Do not teach from a source you have not mapped. On a new source:
    ```
    mkdir -p assets
    SKILL_DIR=$(dirname "$(find ~/.claude/skills /mnt/skills /opt/skills . \
-     -name SKILL.md -path '*teach-from-source*' 2>/dev/null | head -1)")
+     -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
    cp "$SKILL_DIR"/assets/* ./assets/
    ```
    If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
