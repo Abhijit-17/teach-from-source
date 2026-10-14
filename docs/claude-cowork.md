@@ -45,6 +45,8 @@ unzip -l dist/teach-from-source.zip
 ```
 teach-from-source/
 teach-from-source/SKILL.md              <- must be exactly one level deep
+teach-from-source/FIRST-SESSION.md
+teach-from-source/UPGRADING.md
 teach-from-source/INGESTION.md
 teach-from-source/TOOLS.md
 teach-from-source/MISSION-FORMAT.md
@@ -52,6 +54,7 @@ teach-from-source/SOURCE-MANIFEST-FORMAT.md
 teach-from-source/GLOSSARY-FORMAT.md
 teach-from-source/LEARNING-RECORD-FORMAT.md
 teach-from-source/STE-RULES.md
+teach-from-source/STE-DICTIONARY.md
 teach-from-source/assets/lesson.css
 teach-from-source/assets/components.css
 teach-from-source/assets/quiz.js

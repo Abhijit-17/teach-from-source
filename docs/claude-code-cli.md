@@ -38,8 +38,9 @@ Verify:
 
 ```bash
 ls ~/.claude/skills/teach-from-source
-# assets  GLOSSARY-FORMAT.md  INGESTION.md  LEARNING-RECORD-FORMAT.md
-# MISSION-FORMAT.md  SKILL.md  SOURCE-MANIFEST-FORMAT.md  STE-RULES.md  TOOLS.md
+# assets  FIRST-SESSION.md  GLOSSARY-FORMAT.md  INGESTION.md  LEARNING-RECORD-FORMAT.md
+# MISSION-FORMAT.md  SKILL.md  SOURCE-MANIFEST-FORMAT.md  STE-DICTIONARY.md  STE-RULES.md
+# TOOLS.md  UPGRADING.md
 ```
 
 > **Personal vs. project scope.** `~/.claude/skills/` makes the skill available in every session on this machine, which is what you want here, since learning workspaces aren't tied to one repo. Dropping it in a project's `.claude/skills/` instead scopes it to that project only.

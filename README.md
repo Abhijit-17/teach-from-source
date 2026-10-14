@@ -117,6 +117,8 @@ teach-from-source/
 +-- claude-code/
 |   `-- teach-from-source/          <- copy this into ~/.claude/skills/
 |       +-- SKILL.md                <- + disable-model-invocation, + argument-hint
+|       +-- FIRST-SESSION.md        <- setting up a new course, read once
+|       +-- UPGRADING.md            <- the upgrade sweep and cutover for older courses
 |       +-- INGESTION.md            <- acquire, map, extract, per medium
 |       +-- TOOLS.md                <- the CLI toolchain, recipes, degradation ladder
 |       +-- MISSION-FORMAT.md       <- MISSION.md contract
@@ -124,6 +126,7 @@ teach-from-source/
 |       +-- GLOSSARY-FORMAT.md      <- GLOSSARY.md contract
 |       +-- LEARNING-RECORD-FORMAT.md <- learning-records/*.md contract
 |       +-- STE-RULES.md            <- STE Part 1 rules, summarised in our own words
+|       +-- STE-DICTIONARY.md       <- finding the STE dictionary, and its permission gate
 |       `-- assets/
 |           +-- lesson.css          <- the dark theme, single source of truth
 |           +-- components.css      <- styles for the skill's lesson components
@@ -141,7 +144,7 @@ teach-from-source/
 `-- tests/                          <- python3 -m unittest (not shipped in the skill)
 ```
 
-`SKILL.md` is the entry point in both builds and loads the rest progressively. The format files and `TOOLS.md` are only pulled in when they're actually needed, which keeps the resident cost of having the skill installed near zero.
+`SKILL.md` is the entry point in both builds and loads the rest progressively. The format files, `TOOLS.md`, and the once-only procedures (`FIRST-SESSION.md`, `UPGRADING.md`, `STE-DICTIONARY.md`) are only pulled in when they're actually needed, which keeps the resident cost of having the skill installed near zero.
 
 ---
 

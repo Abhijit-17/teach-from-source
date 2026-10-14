@@ -38,27 +38,21 @@ If the source does not cover something the mission needs, say so out loud and ma
 
 ## First Session: Ingest Before You Teach
 
-Do not teach from a source you have not mapped. On a new source:
+Do not teach from a source you have not mapped. On a new source, follow [FIRST-SESSION.md](./FIRST-SESSION.md): confirm the workspace, acquire and map the source, register it, set up `./assets/` (below), establish the mission, and only then teach lesson `0001`.
 
-0. **Confirm the workspace.** The current directory becomes a teaching workspace, and files will be created here. If it already contains an unrelated project, stop and agree on a directory with the user before writing anything.
-1. **Acquire and identify.** Get a stable local snapshot: confirm the file, fetch the page, clone the repo, pull the transcript. Assign a short stable ID (`atomic-habits`, `sicp`, `attention-paper`).
-2. **Map the structure.** Extract the table of contents / section headings into `./sources/<id>/OUTLINE.md`, with locators for each unit. Follow [INGESTION.md](./INGESTION.md) for per-medium mechanics.
-3. **Register it** in `SOURCES.md` with provenance and coverage all-unread.
-4. **Set up `./assets/`.** Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host. `SKILL_DIR` is the folder this `SKILL.md` was loaded from: the base directory the host states when it loads the skill (Claude Code states it), or the path you read this file at. A machine can hold several copies of this skill (a synced copy from another host, an old install), possibly of other versions, so search only when that folder is unknown or your shell cannot reach it:
-   ```
-   mkdir -p assets
-   SKILL_DIR="<the skill's base directory>"
-   [ -f "$SKILL_DIR/SKILL.md" ] || SKILL_DIR=$(dirname "$(find ~/.claude/skills \
-     /mnt/skills /opt/skills . -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
-   cp "$SKILL_DIR"/assets/* ./assets/
-   ```
-   If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
+### Set up `./assets/`
 
-   `course_check.py` and `components.css` are the two assets the skill may replace later. Each carries a version on its second line (`python3 assets/course_check.py --version`, and `/* components.css 1.1.0 */`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it, and then do the upgrade sweep (see [Returning Sessions](#returning-sessions)). Never do this for `lesson.css` (see [Theme](#theme)).
-5. **Establish the mission.** Ask why they want this material, and what "done" looks like: the whole book, one part, one capability. Write `MISSION.md`. Do not skip this because a title looks self-explanatory; "learn SICP" and "pass my compilers exam" produce completely different lesson sequences.
-6. **Only then** teach lesson `0001`.
+Copy the skill's starter components into the workspace before writing lesson one. **Do not hardcode the skill's location.** It differs per host. `SKILL_DIR` is the folder this `SKILL.md` was loaded from: the base directory the host states when it loads the skill (Claude Code states it), or the path you read this file at. A machine can hold several copies of this skill (a synced copy from another host, an old install), possibly of other versions, so search only when that folder is unknown or your shell cannot reach it:
+```
+mkdir -p assets
+SKILL_DIR="<the skill's base directory>"
+[ -f "$SKILL_DIR/SKILL.md" ] || SKILL_DIR=$(dirname "$(find ~/.claude/skills \
+  /mnt/skills /opt/skills . -path '*/teach-from-source/SKILL.md' 2>/dev/null | head -1)")
+cp "$SKILL_DIR"/assets/* ./assets/
+```
+If that resolves to nothing, the host did not expose the skill as files. Say so, then write `assets/lesson.css`, `assets/components.css` and `assets/quiz.js` yourself from the contracts described in [Presentation](#presentation), the component markup in [Teaching Method](#teaching-method-first-principles), and the `quiz.js` markup contract. A workspace without them produces unstyled lessons, which is a worse failure than a slow one.
 
-A large book maps in minutes and pays for itself immediately. Resist the urge to start teaching from chapter 1 before the map exists. Without it you cannot judge the zone of proximal development, and you will teach in flat linear order, which is rarely the right order.
+`course_check.py` and `components.css` are the two assets the skill may replace later. Each carries a version on its second line (`python3 assets/course_check.py --version`, and `/* components.css 1.1.0 */`). When the skill's copy is newer than the workspace's, or the workspace has none, copy the skill's over it, and then do the upgrade sweep (see [UPGRADING.md](./UPGRADING.md#an-upgrade)). Never do this for `lesson.css` (see [Theme](#theme)).
 
 ## Returning Sessions
 
@@ -71,15 +65,9 @@ On re-entry to an existing workspace, read in this order, and nothing else up fr
 
 Then three quick checks, every session:
 
-- **The STE dictionary.** Look for it as described in [ASD-STE100 Writing](#asd-ste100-writing). If the course is in Rules-only mode and the dictionary and its permission note are now present, say so and offer to re-check the Rules-only lessons listed in `NOTES.md`.
-- **An upgrade.** When the skill's `course_check.py` or `components.css` (in `$SKILL_DIR/assets/`, resolved as in First Session step 4) is newer than the workspace's copy, or the workspace has none, the skill has changed since this course last ran. Copy both files in, then sweep the workspace's own working rules for conflicts with this skill: the conventions in `NOTES.md`, the Gaps in `SOURCES.md`, the lesson plan, and `GLOSSARY.md`. List each conflict with the wording you propose, change only what the user approves, and record the sweep in `NOTES.md` (`Upgrade sweep to skill 1.1.0, 14 Oct 2026: …`). Leave the goals and constraints in `MISSION.md` alone, because they are the user's, and leave old lessons as they are. Known conflicts when a course moves to 1.1.0:
-  - The old marker `<span class="cite">outside the docs</span>` becomes the `.gap` box. `course_check.py` reports a `.cite` that is not a link.
-  - A numbered lesson plan becomes topics in order.
-  - A Gap for mappings onto the user's project, or for analogies, is removed: they are Illustrations.
-  - A Gap for interview questions is removed: questions are free, and answers are cited.
-  - Typed quote marks around source words become `<q>` in every lesson written or rewritten from now on.
-  - Old `GLOSSARY.md` entries. `course_check.py` checks the whole glossary on every run, so an entry with no `_Source_:` line, or a definition over the STE limits, blocks every new lesson. Run `python3 assets/course_check.py GLOSSARY.md` and propose a fix for each finding: move a locator written inside a definition to its own `_Source_:` line, find the locator for an entry that has none or give an Outside-the-source line to a name that no source gives, and reword each definition the checker reports. A rule that adds a term only once the user knows it is dropped: an entry now comes no later than the lesson that first uses the term.
-- **The cutover.** A workspace started before this skill taught first principles and wrote in STE has lessons but no cutover line in `NOTES.md`. Old lessons stay as they are. The new rules apply from the next lesson number: record it (`STE + first-principles from lesson 0013`). Offer **once** to run `course_check.py` on the old lessons and rewrite the ones the user picks, keeping each old version as an old copy (`NNNN-name.vX.Y.Z.html`). Never put an STE badge on an old lesson.
+- **The STE dictionary.** Look for it in `./ste100/`, then `~/.claude/ste100/` (Claude Code only). If the course is in Rules-only mode and the dictionary and its permission note are now present, say so, follow [STE-DICTIONARY.md](./STE-DICTIONARY.md), and offer to re-check the Rules-only lessons listed in `NOTES.md`.
+- **An upgrade.** When the skill's `course_check.py` or `components.css` (in `$SKILL_DIR/assets/`, resolved as in [Set up `./assets/`](#set-up-assets)) is newer than the workspace's copy, or the workspace has none, the skill has changed since this course last ran. Follow [UPGRADING.md](./UPGRADING.md#an-upgrade).
+- **The cutover.** A workspace started before this skill taught first principles and wrote in STE has lessons but no cutover line in `NOTES.md`. Follow [UPGRADING.md](./UPGRADING.md#the-cutover).
 
 That is enough to pick the next lesson. Do **not** re-read old lessons, do not re-open source files, and do not re-extract sections that already sit in `sources/<id>/sections/`. The workspace files exist precisely so a fresh session starts warm. Begin the session with a one-breath recap ("last time: X; today: Y") and a quick retrieval question from a previous lesson. That is your spacing mechanism.
 
@@ -211,16 +199,11 @@ Every word must be either an Approved word, used in its one approved meaning and
 
 ### The STE dictionary and its permission gate
 
-This skill never ships STE text. The user gets their own copy of the specification from ASD (free, from asd-ste100.org).
-
-1. **Find it.** Look in the workspace's `./ste100/` first, then `~/.claude/ste100/` (Claude Code only).
-2. **Check permission.** The specification's copyright forbids reproduction without ASD's written authority. The word list is a reproduction, so it is extracted only once the folder holds `PERMISSION.md`: the user's own record of ASD's written permission. Without `PERMISSION.md`, do not extract anything, whatever the user says, and tell them why.
-3. **Extract once** with permission: write `approved-words.tsv` into the same folder, one row per approved word form (`word<TAB>part of speech<TAB>approved meaning`; lines starting with `#` are comments). Approved words are the uppercase entries in the Part 2 word list. Never copy dictionary text anywhere else.
-4. **If the dictionary is missing or not permitted**, stop before the first lesson that needs it. Explain where to get the specification, where to put it, and what `PERMISSION.md` is. Then offer **Rules-only mode**: lessons follow the STE writing rules, the dictionary is not checked, and each lesson's header carries the badge
-   ```html
-   <p class="lesson-meta">STE: writing rules only, dictionary not checked</p>
-   ```
-   Use Rules-only mode only once the user agrees. Record it in `NOTES.md` with each Rules-only lesson number. `course_check.py` reports which mode it ran in on its first line of stderr.
+This skill never ships STE text. The word check needs the user's own copy of the specification and ASD's written permission: follow [STE-DICTIONARY.md](./STE-DICTIONARY.md) before the first lesson of a course, and whenever a dictionary turns up. In **Rules-only mode**, which the user must agree to, each lesson's header carries the badge
+```html
+<p class="lesson-meta">STE: writing rules only, dictionary not checked</p>
+```
+Record it in `NOTES.md` with each Rules-only lesson number.
 
 ## Presentation
 
