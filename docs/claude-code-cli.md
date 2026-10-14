@@ -38,8 +38,9 @@ Verify:
 
 ```bash
 ls ~/.claude/skills/teach-from-source
-# assets  GLOSSARY-FORMAT.md  INGESTION.md  LEARNING-RECORD-FORMAT.md
-# MISSION-FORMAT.md  SKILL.md  SOURCE-MANIFEST-FORMAT.md  TOOLS.md
+# assets  FIRST-SESSION.md  GLOSSARY-FORMAT.md  INGESTION.md  LEARNING-RECORD-FORMAT.md
+# MISSION-FORMAT.md  SKILL.md  SOURCE-MANIFEST-FORMAT.md  STE-DICTIONARY.md  STE-RULES.md
+# TOOLS.md  UPGRADING.md
 ```
 
 > **Personal vs. project scope.** `~/.claude/skills/` makes the skill available in every session on this machine, which is what you want here, since learning workspaces aren't tied to one repo. Dropping it in a project's `.claude/skills/` instead scopes it to that project only.
@@ -126,6 +127,27 @@ done
 
 `MISS` lines are fine. They're a menu, not a failure. `MISS ebook-convert` just means "don't hand it a `.azw3` yet."
 
+### Python 3: needed for the lesson checker
+
+Every lesson is checked by `assets/course_check.py` before the skill hands it to you: the charset line, the STE writing limits, and the first-principles structure. It needs `python3` and nothing else (standard library only).
+
+```bash
+python3 --version    # macOS: comes with the Xcode command line tools, or `brew install python`
+```
+
+Without it the skill says so and checks by hand, which is slower and less reliable.
+
+### Optional: your STE dictionary
+
+Lessons are written in ASD-STE100 Simplified Technical English. The skill does not ship the STE specification. Get your own copy from ASD ([https://www.asd-ste100.org/](https://www.asd-ste100.org/)) and put it in one place for every course on this machine:
+
+```bash
+mkdir -p ~/.claude/ste100
+mv ~/Downloads/<the STE PDF> ~/.claude/ste100/
+```
+
+The skill checks words against the dictionary only once that folder also holds a `PERMISSION.md`: your own record of ASD's written permission to use the dictionary this way. Until then, it offers **Rules-only mode**. See [STE setup](../README.md#ste-setup) in the README.
+
 ---
 
 ## Step 4: Create a workspace
@@ -151,6 +173,8 @@ git init && git commit --allow-empty -m "start: DDIA workspace"
 ## Step 5: Start the course
 
 Invoke it explicitly. `disable-model-invocation: true` in the CLI build means Claude will never fire this at you on its own. A stateful, file-writing, multi-session teaching engine shouldn't launch because you said the word "teach" in passing.
+
+> **If you also uploaded the Cowork build.** Claude Code offers that copy too, as `anthropic-skills:teach-from-source`, and the Cowork build has no `disable-model-invocation`. So a plain "teach me…" prompt can start it, at whatever version you last uploaded. Start every course with `/teach-from-source`, and keep both hosts on the same version (see [Updating](#updating)).
 
 Say two things: **the source** and **why you want it**.
 
@@ -183,7 +207,7 @@ The first session ingests before it teaches:
 1. **Acquire.** A stable local snapshot, and a short stable ID (`ddia`, `sicp`, `attention-paper`).
 2. **Map.** The whole source at low resolution into `sources/<id>/OUTLINE.md`: units, locators, dependencies, and the **page offset** (printed page numbers and PDF page numbers almost never agree, and every later citation depends on getting this right).
 3. **Register** it in `SOURCES.md` with provenance, coverage all-unread.
-4. **Set up `assets/`.** `lesson.css` and `quiz.js` get copied into the workspace.
+4. **Set up `assets/`.** `lesson.css`, `components.css`, `quiz.js` and `course_check.py` get copied into the workspace.
 5. **Establish the mission.** You'll get interviewed here. Answer properly.
 6. **Then** lesson `0001`.
 
@@ -287,7 +311,11 @@ Copied:
 cd /path/to/teach-from-source && git pull && ./scripts/install-cli.sh
 ```
 
+If you also use Cowork, upload the new build there in the same sitting ([Cowork guide: Updating the skill](./claude-cowork.md#updating-the-skill)). Claude Code can run the Cowork copy too, so both hosts should run the same version.
+
 Existing workspaces are unaffected, and that's deliberate: **`assets/lesson.css` in a workspace is canonical for that workspace.** Once a course has evolved its own components, an update won't overwrite them. If you want a workspace to pick up an improved stylesheet, copy it in yourself, on purpose.
+
+The two exceptions are `assets/course_check.py` and `assets/components.css`, the styles for the skill's own lesson components. Each carries a version line, and the skill replaces the workspace copy when its own is newer, so every course checks lessons by the current rules and can show the current components. Restyle a component in `lesson.css`, which lessons link after `components.css`.
 
 ---
 
@@ -295,6 +323,13 @@ Existing workspaces are unaffected, and that's deliberate: **`assets/lesson.css`
 
 ```bash
 rm -rf ~/.claude/skills/teach-from-source
+```
+
+`install-cli.sh` never deletes an earlier install: it moves it to `~/.claude/skill-backups/`. To remove those copies too (this also catches any that older versions of the script left in `~/.claude/skills/`):
+
+```bash
+find ~/.claude/skills ~/.claude/skill-backups -maxdepth 1 -name 'teach-from-source.bak-*' \
+  -exec rm -rf {} + 2>/dev/null
 ```
 
 Your workspaces under `~/LEARNING/` are untouched. They're plain Markdown and HTML, and they keep working forever. That's the point.

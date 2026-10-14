@@ -1,0 +1,29 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 0001</title>
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/lesson.css">
+<h1>Replicas</h1>
+<div class="recall-check"><p>Recall check: how does a replica keep the data? <a href="0000-replica.html">Lesson 0000</a></p>
+  <details><summary>Answer</summary><p>It keeps a copy of the data.</p></details></div>
+<p>A replica keeps a copy of the data. When the data changes, the leader sends the new value to each replica.</p>
+<p><span class="name">Martin Kleppmann</span> tells you how a replica keeps the data. Use <code>SET key value; GET key; DEL key; SET key other value; GET key; DEL key; SET key value</code> to see the value.</p>
+<p>Use <span class="math">r = n - f</span> to get the number of replicas (<a class="cite" href="#">p. 12</a>).</p>
+<p>The leader keeps <q>a copy kept on another machine; it's slower</q> <a class="cite" href="#">p. 12</a>.</p>
+<ol class="steps">
+  <li>Read the value from the leader.</li>
+</ol>
+<section class="fp" data-concept="replica">
+  <div class="fp-problem"><h3>Problem</h3><p>A node can stop.</p></div>
+  <div class="fp-truths"><h3>Ground truths</h3><p>A node can stop at any time.</p>
+    <div class="gap"><p>Outside the source: not from your registered sources. Logged as a Gap.</p>
+    <p>A copy of the data can be on two nodes.</p></div>
+  </div>
+  <div class="fp-buildup"><h3>Build-up</h3><p>If one node stops, the other node keeps the data.</p></div>
+  <div class="fp-name"><h3>Name</h3><p>This copy is a replica.</p></div>
+  <div class="fp-test"><h3>Foundation test</h3><p>If a node does not stop, you do not need a replica.</p></div>
+</section>
+<div class="illustration"><p>Illustration: the sources applied to your project, or shown through an analogy. Not a claim from the sources.</p>
+  <p>A replica keeps a copy of the data.</p></div>
+<blockquote>Data outlives code; that is the problem, and it's a hard one to solve well.<cite>Kleppmann, ch. 1</cite></blockquote>
+<pre>SET key value; GET key</pre>

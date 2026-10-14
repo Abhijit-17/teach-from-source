@@ -4,10 +4,13 @@
 
    Markup contract:
    <div class="quiz" data-answer="b">
-     <p class="q">Question text? <a class="cite" href="...">[p. 118]</a></p>
+     <p class="q">Question text?</p>
      <button data-key="a">Option one</button>
      <button data-key="b">Option two</button>
-     <div class="explain">Why b is right, with locator.</div>
+     <div class="explain">Why b is right. <a class="cite" href="...">[p. 118]</a></div>
+
+   The question makes no claim. The explanation does, so it carries the
+   .cite link (course_check.py reports an .explain with no .cite or .gap).
    </div>
 
    Feedback is border + written explanation, never colour alone. */

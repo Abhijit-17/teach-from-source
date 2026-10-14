@@ -120,6 +120,11 @@ blockquote cite { display: block; margin-top: .5rem; font-size: .8rem; font-styl
 .gap      { border-left-color: var(--err); }
 .note > :last-child, .warn-box > :last-child, .gap > :last-child { margin-bottom: 0; }
 
+/* Markers for course_check.py, with no visual change:
+     .math    formulas (Exempt text)
+     .name    titles and personal names (Exempt text)
+     .steps   procedural text: 20 words per sentence, not 25 */
+
 /* ---- Code ---- */
 
 code {

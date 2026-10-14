@@ -32,12 +32,17 @@
 - Use for: the neuroscience layer the books gesture at but don't explain.
 
 ## Supplementary
-- [Article: "Habit Formation Timelines", Lally et al.](https://example.com)
-  Added because the primary source cites the "66 days" figure without the study. Use for: the actual variance in the data.
+
+### `lally-2010`: "How are habits formed", Lally et al. (2010)
+- Origin: `https://example.com/lally-2010.pdf` (fetched 2026-08-03 via `curl`)
+- Snapshot: `sources/lally-2010/raw/lally-2010.pdf`
+- Gap: the primary source cites the "66 days" figure without the study.
+- Recommended: 2026-08-03, as the original study behind the figure. Approved by the user: 2026-08-03.
+- Use for: the actual variance in the data.
 
 ## Gaps
-- Neither source covers relapse recovery in any depth, and the mission needs it. Find a supplementary source.
-- `atomic-habits` Ch. 11 figure is a scan; text extraction is unreliable.
+- **Relapse recovery**: neither source covers it in any depth, and the mission needs it. Find a supplementary source.
+- **Ch. 11 figure**: the `atomic-habits` Ch. 11 figure is a scan; text extraction is unreliable.
 
 ## Conflicts
 - Clear says habit stacking is near-universal; Lally's data suggests high inter-individual variance. Resolved in [learning-records/0004-habit-timeline-variance.md](./learning-records/0004-habit-timeline-variance.md): teach the range, not the number.
@@ -52,6 +57,8 @@
 - **Annotate with "use for."** One line on what this source is actually good for. In three months a bare title tells you nothing.
 - **Keep coverage current.** Update it in the same turn you finish a lesson, not "later." A stale coverage line makes the next-lesson decision wrong.
 - **Separate primary from supplementary.** Primary is what the user brought and wants to learn. Supplementary is what you added to patch a gap, and it must always say which gap.
+- **Record the recommendation and the approval.** A Supplementary entry says when you recommended it and when the user approved it. Never register one the user did not approve. If the user downloaded it because you could not fetch it, say so in place of the fetch tool (`downloaded by the user, 2026-08-03`).
+- **Give each Gap a bold name** at the start of its line. A glossary entry for a name no source gives refers to its Gap by that name (`_Source_: Outside-the-source (Gap: Relapse recovery)`), and `course_check.py` matches it exactly, ignoring a trailing period or colon.
 - **Surface gaps loudly.** A `## Gaps` section that stays empty across a whole book means you are not checking the mission against the source. Every source has gaps.
 - **Log conflicts, don't arbitrate silently.** When sources disagree, record both positions and link the learning record where it was resolved.
 - **Prune dead sources.** If material turned out to be off-mission or wrong, remove it and note why in `NOTES.md`. Better two sharp sources than nine skimmed ones.

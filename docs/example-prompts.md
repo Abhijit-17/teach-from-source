@@ -97,7 +97,7 @@ Acknowledge your role, parse the source document, and execute Steps 1 and 2.
 | `{path to your PDF/EPUB, or a URL}` | Your actual source. Any medium works; see the guides. |
 | `{book title}` / `{author}` | The source you are learning from. |
 | The persona | Whatever teaching voice suits the material. A "Bar Raiser" fits interview prep; a patient tutor fits a maths text. |
-| Rule 2's depth line | Your real starting point. *"I have written production Go for years but never touched distributed consensus"* is far more useful than a job title. |
+| Rule 2's depth line | Your real starting point. *"I have written production Go for years but never touched distributed consensus"* is far more useful than a job title. Rule 2 only needs to say *how deep*: see the note below. |
 | Rule 4 | The feedback loop you want. A coding challenge, a proof, a design critique, a set of retrieval questions. |
 
 Keep it about **what you know and what you want to do**, not who you are or
@@ -123,6 +123,8 @@ wrong, because that file steers every later lesson.
 **The HALT instruction is already house policy.** The skill never advances
 coverage without your confirmation, and in Cowork the recommended global
 instruction reinforces it. Step 4 is belt and braces, which is fine.
+
+**First principles is built in.** Since v1.1.0 the skill teaches every new concept from first principles anyway: the problem, the ground truths, a step-by-step build-up, the name last, then a "what if this were false?" test. So Rule 2 only has to state *how deep* to go and where your floor is. The depth stays bounded by your sources: anything deeper than the book goes through a recommended supplementary source you approve, or is clearly marked as outside the source.
 
 One genuine tension to expect: a strict chapter-by-chapter rule overrides the
 skill's default, which is to teach in *mission order* rather than page order.
