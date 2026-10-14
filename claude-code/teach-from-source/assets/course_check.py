@@ -19,6 +19,8 @@ Checks:
   fp         every section.fp has the five fp-* steps, in order, as children
   gap        every .gap starts with the fixed Outside-the-source line
   recall     every .recall-check has a link to a lesson and a <details> answer
+  lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
+             file that exists. Refer to a future lesson by its topic
   glossary   every GLOSSARY.md entry has a _Source_: locator line. Only
              terms with one count as Technical nouns and verbs (ADR 0002)
 
@@ -75,6 +77,8 @@ CONTRACTION = re.compile(
     r"\b\w+n[\u2019']t\b|\b\w+[\u2019'](?:re|ll|ve|m|d)\b|\b(?:it|that|there|what|here|who)[\u2019']s\b",
     re.IGNORECASE)
 WORD = re.compile(r"[A-Za-z][A-Za-z\u2019'-]*")
+LESSON_NUMBER = re.compile(r"\blessons?\s+(\d{1,4})\b", re.IGNORECASE)
+LESSON_FILE = re.compile(r"^\d{4}-[^/]+\.html$")
 
 
 # --- word count (STE 8.4-8.7) ------------------------------------------------
@@ -260,11 +264,12 @@ class Checker:
 # --- HTML --------------------------------------------------------------------
 
 class LessonParser(HTMLParser):
-    """Splits a lesson into Blocks and checks fp, gap and recall structure."""
+    """Splits a lesson into Blocks and checks structure and lesson references."""
 
-    def __init__(self, path, checker, findings):
+    def __init__(self, path, checker, findings, lessons_dir):
         super().__init__(convert_charrefs=True)
         self.path, self.checker, self.findings = path, checker, findings
+        self.lessons_dir = Path(lessons_dir)
         self.stack = []      # dicts: tag, classes, exempt, skip, steps, line
         self.blocks = []     # open Blocks, innermost last
         self.fp = []         # open fp sections: [line, step classes seen]
@@ -286,6 +291,8 @@ class LessonParser(HTMLParser):
         if self.stack and "fp" in self.stack[-1]["classes"] \
                 and self.stack[-1]["tag"] == "section":
             self.fp[-1][1].extend(c for c in classes if c in FP_STEPS)
+        if tag == "a":
+            self.check_link(dict(attrs).get("href") or "", line)
         for r in self.recalls:
             r[1] = r[1] or (tag == "a" and bool(dict(attrs).get("href")))
             r[2] = r[2] or tag == "details"
@@ -334,6 +341,8 @@ class LessonParser(HTMLParser):
     def handle_data(self, data):
         for g in self.gaps:
             g[1] += data
+        if not self.top("skip"):
+            self.check_lesson_numbers(data)
         if self.top("skip") or self.top("exempt") or not self.blocks:
             return
         self.blocks[-1].add(data, self.getpos()[0])
@@ -357,6 +366,24 @@ class LessonParser(HTMLParser):
                                          f".gap must start with: {GAP_LINE}"))
 
 
+    def check_link(self, href, line):
+        target = href.split("#", 1)[0].split("?", 1)[0]
+        if ":" in target or not LESSON_FILE.match(Path(target).name):
+            return
+        if not (Path(self.path).parent / target).exists():
+            self.findings.append(Finding(self.path, line, "lesson-ref",
+                                         f"link to {target}, which does not exist"))
+
+    def check_lesson_numbers(self, data):
+        start = self.getpos()[0]
+        for m in LESSON_NUMBER.finditer(data):
+            n = int(m.group(1))
+            if not any(self.lessons_dir.glob(f"{n:04d}-*.html")):
+                line = start + data.count("\n", 0, m.start())
+                self.findings.append(Finding(
+                    self.path, line, "lesson-ref",
+                    f"lesson {n:04d} does not exist yet: refer to a future lesson by its topic"))
+
     def close_recall(self):
         line, link, answer = self.recalls.pop()
         missing = [m for m, ok in (("a link to the lesson that built it", link),
@@ -366,13 +393,13 @@ class LessonParser(HTMLParser):
                                          ".recall-check needs " + " and ".join(missing)))
 
 
-def check_html(path, checker, findings):
+def check_html(path, checker, findings, lessons_dir):
     raw = Path(path).read_text(encoding="utf-8")
     first = raw.split("\n", 1)[0]
     if not re.search(r"<meta\s+charset=[\"']?utf-8", first, re.I):
         findings.append(Finding(str(path), 1, "charset",
                                 'line 1 must be <meta charset="utf-8">'))
-    parser = LessonParser(str(path), checker, findings)
+    parser = LessonParser(str(path), checker, findings, lessons_dir)
     parser.feed(raw)
     parser.close()
     while parser.stack:
@@ -399,7 +426,7 @@ def check_paths(paths, workspace, home):
         if str(p).endswith(".md"):
             check_glossary(p, checker, findings)
         else:
-            check_html(p, checker, findings)
+            check_html(p, checker, findings, Path(workspace) / "lessons")
     return sorted(findings, key=lambda f: (f.file, f.line, f.rule))
 
 

@@ -123,6 +123,8 @@ Before writing a lesson, list the concepts it needs and sort each one by the cov
 
 If the New concepts will not all fit in one sitting, split the lesson. Teach the ones the others depend on first, defer the rest to the next lesson, and tell the user what moved and why.
 
+Lesson numbers belong only to lessons that exist, so a split never renumbers anything. A plan of future lessons, wherever the workspace keeps it, lists topics in order, not numbers. A lesson gets its number when you write its file. In a lesson, refer to an earlier lesson by its number, with a link. Refer to a future lesson by its topic only: "a later lesson on transactions shows how". `course_check.py` reports a lesson number or a lesson link that has no file.
+
 ### The First-principles sequence
 
 Each New concept is one `section.fp` with five child blocks, in this order. `course_check.py` fails a section with a step missing or out of order.

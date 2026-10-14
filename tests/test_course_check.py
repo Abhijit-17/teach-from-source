@@ -32,6 +32,8 @@ class Workspace:
         (self.root / "lessons").mkdir(parents=True)
         self.home.mkdir()
         shutil.copy(SAMPLES / "GLOSSARY.md", self.root / "GLOSSARY.md")
+        # The lesson that samples refer back to with "Lesson 0000".
+        shutil.copy(SAMPLES / "lessons" / "0000-replica.html", self.root / "lessons")
         for name in lessons:
             shutil.copy(SAMPLES / "lessons" / f"{name}.html", self.root / "lessons")
         if dictionary:
@@ -131,6 +133,19 @@ class StructureTest(WorkspaceTest):
         findings = self.check_one("recall-check-without-link")
         self.assertEqual(rules(findings), ["recall"])
         self.assertIn("link", findings[0].message)
+
+    def test_lesson_number_with_no_lesson_file(self):
+        findings = self.check_one("lesson-number-not-written")
+        self.assertEqual(rules(findings), ["lesson-ref"])
+        self.assertEqual((findings[0].line, "0009" in findings[0].message), (5, True))
+
+    def test_link_to_lesson_file_that_does_not_exist(self):
+        findings = self.check_one("link-to-lesson-not-written")
+        self.assertEqual(rules(findings), ["lesson-ref"])
+        self.assertIn("0009-later.html", findings[0].message)
+
+    def test_reference_to_written_lesson_passes(self):
+        self.assertEqual(self.check_one("0000-replica"), [])
 
 
 class DictionaryTest(WorkspaceTest):
