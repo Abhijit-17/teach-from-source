@@ -18,6 +18,7 @@ Checks:
              approved-words.tsv. Otherwise this is Rules-only mode.
   fp         every section.fp has the five fp-* steps, in order, as children
   gap        every .gap starts with the fixed Outside-the-source line
+  recall     every .recall-check has a link to a lesson and a <details> answer
   glossary   every GLOSSARY.md entry has a _Source_: locator line. Only
              terms with one count as Technical nouns and verbs (ADR 0002)
 
@@ -259,7 +260,7 @@ class Checker:
 # --- HTML --------------------------------------------------------------------
 
 class LessonParser(HTMLParser):
-    """Splits a lesson into Blocks and checks fp and gap structure."""
+    """Splits a lesson into Blocks and checks fp, gap and recall structure."""
 
     def __init__(self, path, checker, findings):
         super().__init__(convert_charrefs=True)
@@ -268,6 +269,7 @@ class LessonParser(HTMLParser):
         self.blocks = []     # open Blocks, innermost last
         self.fp = []         # open fp sections: [line, step classes seen]
         self.gaps = []       # open .gap elements: [line, text]
+        self.recalls = []    # open .recall-check elements: [line, link, answer]
 
     def top(self, key):
         return self.stack[-1][key] if self.stack else False
@@ -284,6 +286,9 @@ class LessonParser(HTMLParser):
         if self.stack and "fp" in self.stack[-1]["classes"] \
                 and self.stack[-1]["tag"] == "section":
             self.fp[-1][1].extend(c for c in classes if c in FP_STEPS)
+        for r in self.recalls:
+            r[1] = r[1] or (tag == "a" and bool(dict(attrs).get("href")))
+            r[2] = r[2] or tag == "details"
         if tag in VOID_TAGS:
             return
         exempt = self.top("exempt") or tag in EXEMPT_TAGS or bool(classes & EXEMPT_CLASSES)
@@ -301,6 +306,8 @@ class LessonParser(HTMLParser):
             self.fp.append([line, []])
         if "gap" in classes:
             self.gaps.append([line, ""])
+        if "recall-check" in classes:
+            self.recalls.append([line, False, False])
 
     def handle_startendtag(self, tag, attrs):
         self.handle_starttag(tag, attrs)
@@ -319,6 +326,8 @@ class LessonParser(HTMLParser):
                 self.close_fp()
             if "gap" in e["classes"]:
                 self.close_gap()
+            if "recall-check" in e["classes"]:
+                self.close_recall()
             if e["tag"] == tag:
                 break
 
@@ -346,6 +355,15 @@ class LessonParser(HTMLParser):
         if not " ".join(text.split()).startswith(GAP_LINE):
             self.findings.append(Finding(self.path, line, "gap",
                                          f".gap must start with: {GAP_LINE}"))
+
+
+    def close_recall(self):
+        line, link, answer = self.recalls.pop()
+        missing = [m for m, ok in (("a link to the lesson that built it", link),
+                                   ("a <details> answer", answer)) if not ok]
+        if missing:
+            self.findings.append(Finding(self.path, line, "recall",
+                                         ".recall-check needs " + " and ".join(missing)))
 
 
 def check_html(path, checker, findings):

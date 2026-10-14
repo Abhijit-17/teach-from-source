@@ -3,6 +3,8 @@
 <title>Lesson 0001</title>
 <link rel="stylesheet" href="../assets/lesson.css">
 <h1>Lesson 0001</h1>
+<div class="recall-check"><p>Recall check: how does a replica keep the data? <a href="0000-replica.html">Lesson 0000</a></p>
+  <details><summary>Answer</summary><p>It keeps a copy of the data.</p></details></div>
 <p>A replica keeps a copy of the data. When the data changes, the leader sends the new value to each replica.</p>
 <p><span class="name">Martin Kleppmann</span> tells you how a replica keeps the data. Use <code>SET key value; GET key; DEL key; SET key other value; GET key; DEL key; SET key value</code> to see the value.</p>
 <p>Use <span class="math">r = n - f</span> to get the number of replicas (<a class="cite" href="#">p. 12</a>).</p>

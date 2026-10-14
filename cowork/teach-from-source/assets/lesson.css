@@ -156,6 +156,16 @@ blockquote cite { display: block; margin-top: .5rem; font-size: .8rem; font-styl
   padding-left: .8rem;
 }
 
+/* Taught concept: a Recall check, one question with the answer in <details>. */
+.recall-check {
+  border-left: 2px solid var(--accent-quiet);
+  padding-left: .8rem;
+  margin: 1rem 0;
+}
+.recall-check > :first-child { margin-top: 0; }
+.recall-check details { font-size: .92rem; color: var(--text-muted); }
+.recall-check summary { cursor: pointer; }
+
 /* Markers for course_check.py, with no visual change:
      .math    formulas (Exempt text)
      .name    titles and personal names (Exempt text)

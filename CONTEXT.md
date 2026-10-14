@@ -38,9 +38,17 @@ _Avoid_: first principles approach, derivation, bottom-up teaching
 A concept in a lesson that the learner has not yet shown they know. Every New concept gets the full First-principles sequence.
 _Avoid_: unfamiliar concept, fresh topic
 
+**Taught concept**:
+A concept an earlier lesson taught (coverage `taught`) with no evidence yet that the learner knows it. It gets a Recall check.
+_Avoid_: seen concept, covered concept, unproven concept
+
 **Known concept**:
 A concept with evidence the learner knows it (coverage `practiced` or a learning record). It gets a one-line recall linking to the lesson that built it.
-_Avoid_: covered concept, taught concept, prerequisite
+_Avoid_: covered concept, prerequisite
+
+**Recall check**:
+One question in a lesson about a Taught concept, with the answer hidden and a link to the lesson that built it. A correct answer in chat is evidence and moves the concept's section to `practiced`.
+_Avoid_: recap, review question, refresher
 
 **Ground truth**:
 A basic fact or assumption a concept rests on, cited to a registered source, from which the concept is derived.

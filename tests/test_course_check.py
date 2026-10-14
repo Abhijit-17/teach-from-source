@@ -122,6 +122,16 @@ class StructureTest(WorkspaceTest):
     def test_gap_without_fixed_first_line(self):
         self.assertEqual(rules(self.check_one("gap-without-fixed-line")), ["gap"])
 
+    def test_recall_check_without_answer(self):
+        findings = self.check_one("recall-check-without-answer")
+        self.assertEqual(rules(findings), ["recall"])
+        self.assertIn("details", findings[0].message)
+
+    def test_recall_check_without_link(self):
+        findings = self.check_one("recall-check-without-link")
+        self.assertEqual(rules(findings), ["recall"])
+        self.assertIn("link", findings[0].message)
+
 
 class DictionaryTest(WorkspaceTest):
     def test_disallowed_word_is_reported_with_permission(self):

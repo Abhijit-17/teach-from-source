@@ -105,14 +105,20 @@ If possible, open the lesson for the user with a CLI command.
 
 Teach every concept from first principles: from the problem it solves and the facts it rests on, up to the term the source uses for it. **Source wins**: the registered sources set how deep a lesson may go. First principles never licenses teaching foundations from memory. When the sources run out, see [below](#when-the-sources-run-out).
 
-### New and Known concepts
+### New, Taught and Known concepts
 
-Before writing a lesson, list the concepts it needs and sort each one:
+Before writing a lesson, list the concepts it needs and sort each one by the coverage of the section that built it:
 
-- **Known concept**: there is evidence the user knows it, either coverage `practiced` for the section that built it or a learning record. It gets a one-line recall that links to the lesson that built it, and nothing more:
+- **Known concept**: there is evidence the user knows it, either coverage `practiced` or a learning record. It gets a one-line recall that links to the lesson that built it, and nothing more:
   ```html
   <p class="recall">Recall: a replica is a copy of the data on another node. <a href="0003-replication.html">Lesson 0003</a></p>
   ```
+- **Taught concept**: an earlier lesson taught it (coverage `taught`), but there is no evidence yet that the user knows it. It gets a Recall check: one question, the answer hidden in `<details>`, and a link to the lesson that built it. `course_check.py` fails a Recall check without the link or the `<details>`:
+  ```html
+  <div class="recall-check"><p>Recall check: why does a system keep a replica? <a href="0003-replication.html">Lesson 0003</a></p>
+    <details><summary>Answer</summary><p>If one node stops, the other node keeps the data.</p></details></div>
+  ```
+  Ask the user to answer the Recall checks in chat before the lesson goes further. A correct answer is evidence: move that section to `practiced`. A wrong answer means the concept is not known yet; re-teach the part that failed before you build on it.
 - **New concept**: everything else, including what the user says they know but has not shown. It gets the full First-principles sequence.
 
 If the New concepts will not all fit in one sitting, split the lesson. Teach the ones the others depend on first, defer the rest to the next lesson, and tell the user what moved and why.
@@ -260,7 +266,7 @@ A lesson is not done when the file is written. Before the session moves on:
    It prints one `file:line: [rule] message` per finding: a missing charset line, STE limits, `section.fp` structure, `.gap` first lines, glossary entries with no `_Source_:`. Fix every finding and run it again until it prints nothing. A lesson whose first line is not `<meta charset="utf-8">` will show mojibake to the user and nothing to you. Fix it before announcing the lesson, not after they report it.
 
    Then review what a script cannot judge: each word in its approved meaning, one topic per sentence, simple verb tenses in the active voice, noun clusters of three words or fewer, and whether the Build-up really follows step by step. If `python3` is not available, say so and do the checks by hand.
-1. **Mark coverage.** The sections just taught go to `taught` in the outline; update the `SOURCES.md` rollup in the same turn. `practiced` is reserved for evidence: a quiz passed, an exercise worked, a correct answer in conversation. Never for mere exposure.
+1. **Mark coverage.** The sections just taught go to `taught` in the outline; update the `SOURCES.md` rollup in the same turn. `practiced` is reserved for evidence: a quiz passed, an exercise worked, a correct answer in conversation (a Recall check answer counts). Never for mere exposure.
 2. **Write a learning record if one qualifies** under the criteria in [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md): demonstrated understanding, disclosed prior knowledge, a corrected misconception, or a mission shift. Most lessons will not qualify. Coverage is not learning.
 3. **Check the glossary.** Every source term the lesson used has a `GLOSSARY.md` entry with its `_Source_:` locator. In Rules-only mode the checker cannot see a term that has no entry, so look for it yourself.
 4. **Capture preferences** the user expressed ("shorter lessons", "more code, less prose") in `NOTES.md` now, because next session's you won't remember this one.
