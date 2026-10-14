@@ -22,6 +22,8 @@ Checks:
   gap        every .gap starts with the fixed Outside-the-source line
   illustration
              every .illustration starts with the fixed Illustration line
+  quote      every inline source quote <q> has a .cite citation in the same
+             paragraph or list item
   recall     every .recall-check has a link to a lesson and a <details> answer
   lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
              file that exists. Refer to a future lesson by its topic
@@ -33,7 +35,7 @@ Checks:
              ## Gaps in SOURCES.md. Only terms with a valid line count as
              Technical nouns and verbs (ADR 0002)
 
-Exempt text (blockquote, cite, code, pre, .cite, .math, .name) is not checked
+Exempt text (blockquote, q, cite, code, pre, .cite, .math, .name) is not checked
 but counts as one word in its sentence. A script cannot judge meaning, voice
 or one-topic-per-sentence: the agent reviews those after this runs clean.
 
@@ -66,7 +68,7 @@ FP_STEPS = ("fp-problem", "fp-truths", "fp-buildup", "fp-name", "fp-test")
 COMPONENT_CLASSES = {"fp", "recall", "recall-check", "illustration"}  # styled by components.css
 FP_LABELS = {"Problem", "Ground truths", "Build-up", "Name", "Foundation test"}
 
-EXEMPT_TAGS = {"blockquote", "cite", "code", "pre"}
+EXEMPT_TAGS = {"blockquote", "q", "cite", "code", "pre"}
 EXEMPT_CLASSES = {"cite", "math", "name"}
 SKIP_TAGS = {"head", "title", "script", "style", "template"}
 VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input",
@@ -355,6 +357,11 @@ class LessonParser(HTMLParser):
             self.components_linked = True
         if classes & COMPONENT_CLASSES and self.component_line is None:
             self.component_line = line
+        if tag == "q" or "cite" in classes:
+            block = next((e for e in reversed(self.stack) if e["tag"] in BLOCK_TAGS), None)
+            if block is not None:
+                key = "q_line" if tag == "q" else "has_cite"
+                block.setdefault(key, line if tag == "q" else True)
         for r in self.recalls:
             r[1] = r[1] or (tag == "a" and bool(dict(attrs).get("href")))
             r[2] = r[2] or tag == "details"
@@ -392,6 +399,10 @@ class LessonParser(HTMLParser):
             if e["tag"] in BLOCK_TAGS:
                 self.flush()
                 self.blocks.pop()
+                if e.get("q_line") and not e.get("has_cite"):
+                    self.findings.append(Finding(
+                        self.path, e["q_line"], "quote",
+                        "<q> source quote needs a .cite citation in the same paragraph or list item"))
             if e["tag"] == "section" and "fp" in e["classes"]:
                 self.close_fp()
             if e["classes"] & BOX_LINES.keys():

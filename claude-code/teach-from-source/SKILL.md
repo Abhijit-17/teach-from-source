@@ -85,7 +85,7 @@ Context is the scarce resource. The corpus is almost always larger than your con
 - **Read on demand, at section granularity.** Pull the section the next lesson needs, not the chapter around it, and never the book.
 - **Extract once, reuse forever.** The first pass writes `./sources/<id>/sections/<locator>.md`. Later sessions read that file, not the source.
 - **Never bulk-dump a source into context** to "get familiar." That burns the window and teaches nothing.
-- **Quote sparingly and exactly.** When a lesson quotes the source, the words must be the source's words. If you are not looking at the extracted text, you are not quoting; you are recalling. Go read it.
+- **Quote sparingly and exactly.** When a lesson quotes the source, the words must be the source's words. If you are not looking at the extracted text, you are not quoting; you are recalling. Go read it. Put a short quote inside a sentence in `<q>`, not in typed quote marks, with its `.cite` link in the same paragraph or list item: `It is <q>responsible for instantiating, configuring, and assembling the beans</q> <a class="cite" href="…">§1.2</a>.` The browser draws the quote marks. `course_check.py` reports a `<q>` without a citation. Typed quote marks are for everything else (a common name, a phrase from the user's project), and STE checks their words.
 
 ## Lessons
 
@@ -187,7 +187,7 @@ Verbatim source quotes, code, formulas, citation locators, titles and personal n
 
 | Exempt text | Markup |
 |---|---|
-| Source quotes | `<blockquote>`, `<cite>` |
+| Source quotes | `<blockquote>`, `<q>` (inline), `<cite>` |
 | Code | `<code>`, `<pre>` |
 | Formulas | `<span class="math">` |
 | Citation locators | `.cite` |

@@ -9,6 +9,7 @@
 <p>A replica keeps a copy of the data. When the data changes, the leader sends the new value to each replica.</p>
 <p><span class="name">Martin Kleppmann</span> tells you how a replica keeps the data. Use <code>SET key value; GET key; DEL key; SET key other value; GET key; DEL key; SET key value</code> to see the value.</p>
 <p>Use <span class="math">r = n - f</span> to get the number of replicas (<a class="cite" href="#">p. 12</a>).</p>
+<p>The leader keeps <q>a copy kept on another machine; it's slower</q> <a class="cite" href="#">p. 12</a>.</p>
 <ol class="steps">
   <li>Read the value from the leader.</li>
 </ol>
