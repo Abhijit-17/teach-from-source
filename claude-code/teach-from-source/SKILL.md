@@ -149,6 +149,14 @@ Each New concept is one `section.fp` with five child blocks, in this order. `cou
 
 Keep the five `h3` labels exactly as shown.
 
+### Illustrations
+
+An Illustration applies the sources' claims to the user's own project, or shows them through an analogy. It is a teaching tool, not a claim about the topic, so it is not a Gap. Put it in an `.illustration` box whose first line is exactly:
+```html
+<div class="illustration"><p>Illustration: the sources applied to your project, or shown through an analogy. Not a claim from the sources.</p> ... </div>
+```
+An Illustration may use facts about the user's project and everyday life. It may not add a fact about the topic. If it needs one that no registered source gives, that fact goes in a `.gap` box, as below. `course_check.py` fails an `.illustration` without its first line.
+
 ### When the sources run out
 
 When a Ground truth or a Build-up step needs something no registered source covers:
@@ -234,7 +242,7 @@ Same reasoning downstream: `@charset "UTF-8";` as the literal first line of any 
 
 The workspace's `./assets/lesson.css` is the single source of truth. Copy it from this skill on init, link it from every document (`<link rel="stylesheet" href="../assets/lesson.css">`), and build on its custom properties rather than writing per-lesson colour. After init, the **workspace copy is canonical for that workspace**. Extend it in place, and never overwrite it with the skill's version unasked; a workspace that has evolved its own components is allowed to diverge. When a lesson needs a new reusable piece, extend the stylesheet or add a sibling component in `./assets/`. Never inline styles a second lesson would duplicate. That is what makes the workspace read as one course instead of a pile of one-offs.
 
-The skill's own components (`.fp`, `.recall`, `.recall-check`) are styled in `./assets/components.css`, which belongs to the skill, not the workspace: do not edit it, because a newer skill replaces it. A lesson that uses a component links it **before** `lesson.css`, so the workspace can restyle any component in `lesson.css`:
+The skill's own components (`.fp`, `.recall`, `.recall-check`, `.illustration`) are styled in `./assets/components.css`, which belongs to the skill, not the workspace: do not edit it, because a newer skill replaces it. A lesson that uses a component links it **before** `lesson.css`, so the workspace can restyle any component in `lesson.css`:
 ```html
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/lesson.css">

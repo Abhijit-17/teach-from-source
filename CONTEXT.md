@@ -22,6 +22,10 @@ _Avoid_: missing topic, hole
 Lesson content that no registered source backs, shown visibly in the lesson and logged as a Gap.
 _Avoid_: background, general knowledge, parametric knowledge
 
+**Illustration**:
+Lesson content that applies the sources' claims to the learner's own project, or shows them through an analogy, and adds no claim about the topic. It is shown in its own marked box and is not a Gap.
+_Avoid_: example, mapping, application, metaphor
+
 ### Grounding
 
 **Source wins**:

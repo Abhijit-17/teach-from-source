@@ -55,3 +55,18 @@
 .recall-check > :first-child { margin-top: 0; }
 .recall-check details { font-size: .92rem; color: var(--text-muted); }
 .recall-check summary { cursor: pointer; }
+
+/* Illustration: the sources applied to the learner's project, or shown
+   through an analogy. A neutral rail, so it never reads as a .gap warning.
+   The first paragraph is the fixed Illustration line. */
+.illustration {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  background: var(--bg-raised);
+  border-radius: var(--radius);
+  padding: .9rem 1.1rem;
+  margin: 1.5rem 0;
+  font-size: .94rem;
+}
+.illustration > :first-child { color: var(--text-muted); font-size: .88rem; }
+.illustration > :last-child { margin-bottom: 0; }

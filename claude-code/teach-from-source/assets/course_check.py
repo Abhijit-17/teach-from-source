@@ -20,11 +20,13 @@ Checks:
              approved-words.tsv. Otherwise this is Rules-only mode.
   fp         every section.fp has the five fp-* steps, in order, as children
   gap        every .gap starts with the fixed Outside-the-source line
+  illustration
+             every .illustration starts with the fixed Illustration line
   recall     every .recall-check has a link to a lesson and a <details> answer
   lesson-ref every "Lesson NNNN" and every link to NNNN-*.html names a lesson
              file that exists. Refer to a future lesson by its topic
   components a lesson that uses a skill component (.fp, .recall,
-             .recall-check) links assets/components.css
+             .recall-check, .illustration) links assets/components.css
   glossary   every GLOSSARY.md entry has a _Source_: line that is a locator
              (a [...] citation or a link) or exactly
              "Outside-the-source (Gap: <name>)", where <name> is a Gap under
@@ -57,8 +59,11 @@ DESCRIPTIVE_MAX = 25  # STE 6.3
 PARAGRAPH_MAX = 6     # STE 6.6
 
 GAP_LINE = "Outside the source: not from your registered sources. Logged as a Gap."
+ILLUSTRATION_LINE = ("Illustration: the sources applied to your project, or shown through "
+                     "an analogy. Not a claim from the sources.")
+BOX_LINES = {"gap": GAP_LINE, "illustration": ILLUSTRATION_LINE}  # class -> fixed first line
 FP_STEPS = ("fp-problem", "fp-truths", "fp-buildup", "fp-name", "fp-test")
-COMPONENT_CLASSES = {"fp", "recall", "recall-check"}  # styled by components.css
+COMPONENT_CLASSES = {"fp", "recall", "recall-check", "illustration"}  # styled by components.css
 FP_LABELS = {"Problem", "Ground truths", "Build-up", "Name", "Foundation test"}
 
 EXEMPT_TAGS = {"blockquote", "cite", "code", "pre"}
@@ -272,9 +277,10 @@ class Checker:
 
     def check_block(self, path, block, findings):
         text = block.text
-        if text.strip().startswith(GAP_LINE):
-            i = text.index(GAP_LINE)
-            text = text[:i] + " " * len(GAP_LINE) + text[i + len(GAP_LINE):]
+        for fixed in BOX_LINES.values():
+            if text.strip().startswith(fixed):
+                i = text.index(fixed)
+                text = text[:i] + " " * len(fixed) + text[i + len(fixed):]
         if not re.search(r"\w", text):
             return
         heading = block.tag in HEADINGS
@@ -323,7 +329,7 @@ class LessonParser(HTMLParser):
         self.stack = []      # dicts: tag, classes, exempt, skip, steps, line
         self.blocks = []     # open Blocks, innermost last
         self.fp = []         # open fp sections: [line, step classes seen]
-        self.gaps = []       # open .gap elements: [line, text]
+        self.gaps = []       # open .gap and .illustration boxes: [line, text, class]
         self.recalls = []    # open .recall-check elements: [line, link, answer]
         self.component_line = None   # first use of a COMPONENT_CLASSES class
         self.components_linked = False
@@ -367,8 +373,9 @@ class LessonParser(HTMLParser):
             self.blocks.append(Block(tag, steps))
         if tag == "section" and "fp" in classes:
             self.fp.append([line, []])
-        if "gap" in classes:
-            self.gaps.append([line, ""])
+        for box in BOX_LINES:
+            if box in classes:
+                self.gaps.append([line, "", box])
         if "recall-check" in classes:
             self.recalls.append([line, False, False])
 
@@ -387,7 +394,7 @@ class LessonParser(HTMLParser):
                 self.blocks.pop()
             if e["tag"] == "section" and "fp" in e["classes"]:
                 self.close_fp()
-            if "gap" in e["classes"]:
+            if e["classes"] & BOX_LINES.keys():
                 self.close_gap()
             if "recall-check" in e["classes"]:
                 self.close_recall()
@@ -416,10 +423,10 @@ class LessonParser(HTMLParser):
                                      msg + f" (need {', '.join(FP_STEPS)})"))
 
     def close_gap(self):
-        line, text = self.gaps.pop()
-        if not " ".join(text.split()).startswith(GAP_LINE):
-            self.findings.append(Finding(self.path, line, "gap",
-                                         f".gap must start with: {GAP_LINE}"))
+        line, text, box = self.gaps.pop()
+        if not " ".join(text.split()).startswith(BOX_LINES[box]):
+            self.findings.append(Finding(self.path, line, box,
+                                         f".{box} must start with: {BOX_LINES[box]}"))
 
 
     def check_link(self, href, line):

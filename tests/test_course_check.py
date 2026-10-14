@@ -124,6 +124,11 @@ class StructureTest(WorkspaceTest):
     def test_gap_without_fixed_first_line(self):
         self.assertEqual(rules(self.check_one("gap-without-fixed-line")), ["gap"])
 
+    def test_illustration_without_fixed_first_line(self):
+        findings = self.check_one("illustration-without-fixed-line")
+        self.assertEqual(rules(findings), ["illustration"])
+        self.assertEqual(findings[0].line, 6)
+
     def test_recall_check_without_answer(self):
         findings = self.check_one("recall-check-without-answer")
         self.assertEqual(rules(findings), ["recall"])
