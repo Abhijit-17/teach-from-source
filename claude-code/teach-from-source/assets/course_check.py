@@ -34,8 +34,9 @@ Checks:
              .recall-check, .illustration) links assets/components.css
   glossary   every GLOSSARY.md entry has a _Source_: line that is a locator
              (a [...] citation or a link) or exactly
-             "Outside-the-source (Gap: <name>)", where <name> is a Gap under
-             ## Gaps in SOURCES.md. Only terms with a valid line count as
+             "Outside-the-source (Gap: <name>)", where <name> is the bold name
+             of a Gap under ## Gaps in SOURCES.md (a trailing . or : is
+             ignored). Only terms with a valid line count as
              Technical nouns and verbs (ADR 0002)
 
 Exempt text (blockquote, q, cite, code, pre, .cite, .math, .name) is not checked
@@ -205,6 +206,11 @@ LOCATOR = re.compile(r"\[[^\]]+\]|https?://")
 OUTSIDE_SOURCE = re.compile(r"^Outside-the-source \(Gap: (.+)\)$")
 
 
+def gap_name(text):
+    """A Gap name for matching: a trailing period or colon is not part of it."""
+    return text.strip().rstrip(".:").strip()
+
+
 def gap_names(workspace):
     """The bold names of the items under ## Gaps in SOURCES.md."""
     path = Path(workspace) / "SOURCES.md"
@@ -217,7 +223,7 @@ def gap_names(workspace):
         elif in_gaps:
             m = re.match(r"^- \*\*(.+?)\*\*", line)
             if m:
-                names.add(m.group(1).strip())
+                names.add(gap_name(m.group(1)))
     return names
 
 
@@ -227,8 +233,8 @@ def source_problem(entry, gaps):
         return f"'{entry.term}' has no _Source_: locator line"
     m = OUTSIDE_SOURCE.match(entry.source)
     if m:
-        if m.group(1).strip() not in gaps:
-            return (f"'{entry.term}' names Gap '{m.group(1).strip()}', "
+        if gap_name(m.group(1)) not in gaps:
+            return (f"'{entry.term}' names Gap '{gap_name(m.group(1))}', "
                     "which is not under ## Gaps in SOURCES.md")
         return None
     if not LOCATOR.search(entry.source):

@@ -296,6 +296,13 @@ class GlossaryTest(WorkspaceTest):
         self.append_entry(w, "Outside-the-source (Gap: Made-up words)")
         self.assertEqual(w.check("disallowed-word"), [])
 
+    def test_gap_name_match_ignores_a_trailing_period_or_colon(self):
+        w = self.ws()
+        self.log_gap(w, "Made-up words.")
+        self.append_entry(w, "Outside-the-source (Gap: Made-up words)")
+        self.append_entry(w, "Outside-the-source (Gap: Made-up words:)", term="Writes")
+        self.assertEqual(self.check_glossary(w), [])
+
     def test_outside_the_source_entry_naming_an_unlogged_gap(self):
         w = self.ws()
         self.log_gap(w, "Some other gap")
